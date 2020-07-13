@@ -6,10 +6,10 @@ import AdminFormTable from '../../components/admin_form_table'
 
 function Admin() {
   return (
-    <div>
+    <React.Fragment>
       <HeaderAdmin />
       <AdminFormTable />
-    </div>
+    </React.Fragment>
   );
 }
 
