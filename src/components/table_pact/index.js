@@ -14,7 +14,8 @@ const defaultPactState = {
         cbo_nome: '',
         ine: '',
         dias_pact: 22,
-        fechado: 0
+        fechado: 0,
+        justificativa: ''
     },
     list: []
 }
@@ -35,6 +36,38 @@ export default class TablePact extends Component {
         linha.className = 'salvo'
     }
 
+    updateState(user, event) {
+        user[event.target.name] = event.target.value      
+    }
+
+    getJustificativa(user) {
+        const cns = user.cns
+        api.get(`/cnes/pact/${cns}`)
+        .then(justificativa => {
+            if (justificativa) {
+                console.log(justificativa)
+            }
+        })
+    }
+
+    salvarPact(user) {
+        if (!user.dias_pact) user.dias_pact = 22
+        if (!user.justificativa) user.justificativa = ''
+        let data = new Date()
+        user.mes = data.getMonth()
+        user.ano = data.getFullYear()
+        console.log(user)
+        api.post(`/cnes/pact`, user)
+        .then(resp => {
+            this.confirmFunc(user.id)
+            console.log(resp)
+        })
+    }   
+
+    gerarPDF(user) {
+        
+    }
+
     renderRows() {
         return this.state.list.map(user => {
             return (
@@ -46,8 +79,7 @@ export default class TablePact extends Component {
                     <td>{user.ine}</td>
                     <td>
                         <Form>
-                            <Form.Control as="select" className="mr-sm-2"
-                            id="inlineFormCustomSelect" name="dias_pact" custom>
+                            <Form.Control as="select" className="mr-sm-2" name="dias_pact" onChange={e => this.updateState(user, e)} custom>
                                 <option value='22'>22</option>
                                 <option value='21'>21</option>
                                 <option value='20'>20</option>
@@ -76,12 +108,12 @@ export default class TablePact extends Component {
                     </td>
                     <td>
                         <Form.Group>
-                            <Form.Control type='text' placeholder='Justificativa'></Form.Control>
+                            <Form.Control type='text' name='just' placeholder='Justificativa' onChange={e => this.updateState(user, e)} />
                         </Form.Group>
                     </td>
                     <td>
-                        <Button variant='success' onClick={e => this.confirmFunc(user.id)}>Salvar</Button>
-                        <Button variant='warning'>PDF</Button>
+                        <Button variant='success' onClick={e => this.salvarPact(user)}>Salvar</Button>
+                        <Button variant='warning' onClick={e => this.gerarPDF(user)}>PDF</Button>
                     </td>
                 </tr>
             )
