@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Admin from './views/admin';
-import ReactPact from './views/pactuacao'
+import HeaderDirNumoa from './components/headerDirNumoa'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Diretor from './views/diretor'
 
 ReactDOM.render(
   <React.StrictMode>
-    <ReactPact />
+    <Diretor />
   </React.StrictMode>,
   document.getElementById('root')
 );
