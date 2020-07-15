@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import api from '../../services/api'
-import {Table, ProgressBar} from 'react-bootstrap'
+import api from '../../../../services/api'
+import {Dropdown, Table, ProgressBar} from 'react-bootstrap'
 import './styles.css'
 
 const defaultPactState = {
@@ -15,12 +15,13 @@ const defaultPactState = {
 const defaultProdState = {
     proc: {
         procedimento: '',
+        nome: '',
         produzido: 0
     },
     list: []
 }
 
-export default class TableMonitor extends Component {
+export default class TableMonitorUnidade extends Component {
 
     state = {...defaultPactState}
     prod = {...defaultProdState}
@@ -46,7 +47,7 @@ export default class TableMonitor extends Component {
             return (
                 <tr>
                     <td>{proc.procedimento}</td>
-                    <td>nome_procedimento</td>
+                    <td>{proc.nome}</td>
                     <td>{proc.pactuado}</td>
                     <td>{this.generateProd(proc.pactuado)}</td>
                     <td>
@@ -82,7 +83,44 @@ export default class TableMonitor extends Component {
                 <div className='pact-header'>
                     <h1>Monitoramento da Produção</h1>
                     <p>Esta página será utilizada com a finalidade de realizar o monitoramento do alcance da produção por procedimento</p>    
-                </div>               
+                </div>
+                <div className='filtros'>
+                    <Dropdown>
+                        <Dropdown.Toggle variant='secondary'>
+                            Ano
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item>
+                                2020
+                            </Dropdown.Item>                            
+                        </Dropdown.Menu>                    
+                    </Dropdown>
+                    <Dropdown>
+                        <Dropdown.Toggle variant='success'>
+                            Mês
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            <Dropdown.Item>
+                                Junho
+                            </Dropdown.Item>
+                            <Dropdown.Item>
+                                Maio
+                            </Dropdown.Item>   
+                            <Dropdown.Item>
+                                Abril
+                            </Dropdown.Item>   
+                            <Dropdown.Item>
+                                Março
+                            </Dropdown.Item>   
+                            <Dropdown.Item>
+                                Fevereiro
+                            </Dropdown.Item>   
+                            <Dropdown.Item>
+                                Janeiro
+                            </Dropdown.Item>                       
+                        </Dropdown.Menu>                    
+                    </Dropdown>
+                </div>
                 {this.renderTable()}
             </React.Fragment>
         )

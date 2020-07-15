@@ -1,18 +1,18 @@
 import React from 'react'
-import HeaderDir from './components/headerDir'
-import Routes from './diretor_routes'
+import Header from './headerProf'
+import Routes from './profissional_routes'
 import { HashRouter } from 'react-router-dom'
 import './styles.css'
 
-function Diretor() {
+function Profissional() {
     return (
         <HashRouter>
             <React.Fragment>
-                <HeaderDir />
+                <Header />
                 <Routes />
             </React.Fragment>
         </HashRouter>        
-      );
+    );
 }
 
-export default Diretor
+export default Profissional

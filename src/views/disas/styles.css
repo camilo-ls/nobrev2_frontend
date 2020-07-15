@@ -64,7 +64,8 @@ header {
     overflow: hidden;
 }
 
-.monitor-prof {
+.monitor-prof,
+.monitor-pact {
     width: 1800px;
     margin: auto;
     margin-top: 20px;
@@ -84,6 +85,17 @@ header {
   
 }
 
+.pact, .npact {
+    border-right: 1px solid #cccccc;
+    text-align: center;
+    overflow-y: scroll;
+}
+
+
 .td-prof {
     width: 500px;
+}
+
+.pactuar {
+    height: 40px;
 }

@@ -1,0 +1,21 @@
+.form-pact {
+    width: 1800px;
+    margin: auto;
+    margin-top: 50px;
+    background-color: #f6f6f6;
+}
+
+.form-pact button {
+    margin: 5px;
+}
+
+.pact-header {
+    width: 1800px;
+    margin: auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.salvo {
+    background-color: #bbe1fa;
+}

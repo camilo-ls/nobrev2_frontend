@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import api from '../../services/api'
+import api from '../../../../services/api'
 import {Table, Button, Form} from 'react-bootstrap'
 import './styles.css'
 
@@ -51,6 +51,7 @@ export default class TablePact extends Component {
     }
 
     salvarPact(user) {
+        this.confirmFunc(user.id)
         if (!user.dias_pact) user.dias_pact = 22
         if (!user.justificativa) user.justificativa = ''
         let data = new Date()
@@ -79,7 +80,16 @@ export default class TablePact extends Component {
                     <td>{user.ine}</td>
                     <td>
                         <Form>
-                            <Form.Control as="select" className="mr-sm-2" name="dias_pact" onChange={e => this.updateState(user, e)} custom>
+                            <Form.Control as="select" defaultValue='22' className="mr-sm-2" name="dias_pact" onChange={e => this.updateState(user, e)} custom>
+                                <option value='31'>31</option>
+                                <option value='30'>30</option>
+                                <option value='29'>29</option>
+                                <option value='28'>28</option>
+                                <option value='27'>27</option>
+                                <option value='26'>26</option>
+                                <option value='25'>25</option>
+                                <option value='24'>24</option>
+                                <option value='23'>23</option>
                                 <option value='22'>22</option>
                                 <option value='21'>21</option>
                                 <option value='20'>20</option>

@@ -1,12 +1,12 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import HeaderDirNumoa from './components/headerDirNumoa'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Diretor from './views/diretor'
+import Main from './views/main'
+
 
 ReactDOM.render(
   <React.StrictMode>
-    <Diretor />
+    <Main />
   </React.StrictMode>,
   document.getElementById('root')
 );
