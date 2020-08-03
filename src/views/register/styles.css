@@ -1,5 +1,22 @@
 .bloco-registro {
     width: 800px;
-    height: 1000px;
+    height: 845px;
     margin: auto;
+    margin-top: 100px;
+}
+
+.bloco-registro h1 {
+    margin: 0;
+    padding-bottom: 50px;
+}
+
+.form-cpf {
+    margin: 0;
+    margin-bottom: 15px;
+    
+}
+
+.button-cpf {
+    margin: 0;
+    margin-bottom: 15px;
 }
