@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import {Jumbotron, Form, Button} from 'react-bootstrap'
+import bcrypt from 'bcrypt'
 import api from '../../services/api'
 import './styles.css'
 
@@ -42,6 +43,7 @@ function Register() {
     }
 
     const register = () => {
+        const hashedPassword = bcrypt
        const formData = {
         nivel: userNivel,   
         nome: userNome,
