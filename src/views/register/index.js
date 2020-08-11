@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import {Jumbotron, Form, Button} from 'react-bootstrap'
-import bcrypt from 'bcrypt'
+import { Link } from 'react-router-dom'
+import {Jumbotron, Form, Button, Modal} from 'react-bootstrap'
 import api from '../../services/api'
 import './styles.css'
 
@@ -16,6 +16,9 @@ function Register() {
     const [userCbo, setUserCbo] = useState('')
     const [userCargo, setUserCargo] = useState('Cargo')
     const [userCnesNome, setUserCnesNome] = useState('Lotação')
+
+    const [ModalAviso, setModalOpen] = useState(false)
+    const [ModalMensagem, setModalMensagem] = useState('')
 
     const buscarCpf = () => { 
         api.get(`/prof/${userCpf}`)
@@ -43,64 +46,85 @@ function Register() {
     }
 
     const register = () => {
-        const hashedPassword = bcrypt
-       const formData = {
+        const formData = {
         nivel: userNivel,   
         nome: userNome,
         cpf: userCpf,
         email: userEmail,
         password: userPassword,
         admin: userAdmin,
-        cnes: userCnes,
-        ativo: 0
+        cnes: userCnes
        }
+       console.log(formData)
+       api.post('/auth/register', formData)
+       .then(resp => {
+           openModal(resp.data.msg)           
+        })
+       .catch(e => openModal(e.message))
+    }
+
+    const openModal = (msg) => {
+        setModalMensagem(msg)
+        setModalOpen(true)
+    }
+
+    const closeModal = () => {
+        setModalOpen(false)
     }
     
     return (
-        <Jumbotron className='bloco-registro'>
-            <h1> Solicitação de Acesso </h1>
-            <Form>
-                <Form.Group controlId='formBasicCPF'>
-                    <Form.Label>CPF</Form.Label>
-                    <Form.Control type='number' placeholder='Preencha com o seu CPF'
-                    onChange={e => setUserCpf(e.target.value)} className='form-cpf' required/>
-                    <Button variant="warning"
-                    onClick={buscarCpf}> Buscar CPF </Button>            
-                </Form.Group>
-                <hr />              
-               <Form.Group controlId='formBasicNome'>
-                    <Form.Label>Nome Completo</Form.Label>
-                    <Form.Control type='text' placeholder='Preencha com o seu nome completo'
-                    onChange={e => setUserNome(e.target.value)} value={userNome} required/>
-                </Form.Group>                
-                <Form.Group controlId='formBasicEmail'>
-                    <Form.Label>E-mail</Form.Label>
-                    <Form.Control type='email' placeholder='nome@email.com'
-                    onChange={e => setUserEmail(e.target.value)} required/>
-                </Form.Group>                
-                <Form.Group controlId='formBasicSenha'>
-                    <Form.Label>Senha</Form.Label>
-                    <Form.Control type='password' placeholder='Senha'
-                    onChange={e => setUserPassword(e.target.value)} required/>
-                </Form.Group>
-                <hr />
-                <Form.Group id='form-cargo' controlId='formBasicCnes'>
-                    <Form.Label>Cargo</Form.Label>
-                    <Form.Control type='text' placeholder='Cargo' value={userCargo}
-                    disabled />
-                </Form.Group>
-                <Form.Group id='form-lotacao' controlId='formBasicCnes'>
-                    <Form.Label>Lotação</Form.Label>
-                    <Form.Control type='text' placeholder='Lotação' value={userCnesNome}
-                    disabled />
-                </Form.Group>
-                <hr />
-                <Button variant="primary" type="submit"
-                onSubmit={register}>
-                    Solicitar
-                </Button>                                
-            </Form>
-        </Jumbotron>
+        <React.Fragment>
+            <Link to='/login'>Voltar</Link>
+            <Jumbotron className='bloco-registro'>
+                <h1> Solicitação de Acesso </h1>
+                <Form>
+                    <Form.Group controlId='formBasicCPF'>
+                        <Form.Label>CPF</Form.Label>
+                        <Form.Control type='number' placeholder='Preencha com o seu CPF'
+                        onChange={e => setUserCpf(e.target.value)} className='form-cpf' required/>
+                        <Button variant="warning"
+                        onClick={buscarCpf}> Buscar CPF </Button>            
+                    </Form.Group>
+                    <hr />              
+                <Form.Group controlId='formBasicNome'>
+                        <Form.Label>Nome Completo</Form.Label>
+                        <Form.Control type='text' placeholder='Preencha com o seu nome completo'
+                        onChange={e => setUserNome(e.target.value)} value={userNome} required/>
+                    </Form.Group>                
+                    <Form.Group controlId='formBasicEmail'>
+                        <Form.Label>E-mail</Form.Label>
+                        <Form.Control type='email' placeholder='nome@email.com'
+                        onChange={e => setUserEmail(e.target.value)} required/>
+                    </Form.Group>                
+                    <Form.Group controlId='formBasicSenha'>
+                        <Form.Label>Senha</Form.Label>
+                        <Form.Control type='password' placeholder='Senha'
+                        onChange={e => setUserPassword(e.target.value)} required/>
+                    </Form.Group>
+                    <hr />
+                    <Form.Group id='form-cargo' controlId='formBasicCargo'>
+                        <Form.Label>Cargo</Form.Label>
+                        <Form.Control type='text' placeholder='Cargo' value={userCargo}
+                        disabled />
+                    </Form.Group>
+                    <Form.Group id='form-lotacao' controlId='formBasicCnes'>
+                        <Form.Label>Lotação</Form.Label>
+                        <Form.Control type='text' placeholder='Lotação' value={userCnesNome}
+                        disabled />
+                    </Form.Group>
+                    <hr />
+                    <Button variant="primary" onClick={register}>
+                        Solicitar
+                    </Button>                                
+                </Form>
+            </Jumbotron>
+            <Modal show={ModalAviso} onHide={closeModal}>
+                <p> { ModalMensagem } </p>
+                <Button variant="primary" onClick={closeModal}>
+                    Ok
+                </Button>
+            </Modal>
+        </React.Fragment>
     )
 }
 
