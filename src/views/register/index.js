@@ -118,12 +118,14 @@ function Register() {
                     </Button>                                
                 </Form>
             </Jumbotron>
+            
             <Modal show={ModalAviso} onHide={closeModal}>
                 <p> { ModalMensagem } </p>
                 <Button variant="primary" onClick={closeModal}>
                     Ok
                 </Button>
             </Modal>
+            
         </React.Fragment>
     )
 }
