@@ -1,5 +1,5 @@
 import React from 'react'
-import HeaderDir from './components/headerDir'
+import HeaderDir from '../../components/MenuBar'
 import Routes from './diretor_routes'
 import { HashRouter } from 'react-router-dom'
 import './styles.css'

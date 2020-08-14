@@ -74,7 +74,6 @@ function Register() {
     
     return (
         <React.Fragment>
-            <Link to='/login'>Voltar</Link>
             <Jumbotron className='bloco-registro'>
                 <h1> Solicitação de Acesso </h1>
                 <Form>
@@ -88,8 +87,8 @@ function Register() {
                     <hr />              
                 <Form.Group controlId='formBasicNome'>
                         <Form.Label>Nome Completo</Form.Label>
-                        <Form.Control type='text' placeholder='Preencha com o seu nome completo'
-                        onChange={e => setUserNome(e.target.value)} value={userNome} required/>
+                        <Form.Control type='text' placeholder='Nome completo'
+                        onChange={e => setUserNome(e.target.value)} value={userNome} required disabled/>
                     </Form.Group>                
                     <Form.Group controlId='formBasicEmail'>
                         <Form.Label>E-mail</Form.Label>

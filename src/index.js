@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Landing from './views/landing'
+import Home from './views/home'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <React.StrictMode>    
-    <Landing />
+    <Home />
   </React.StrictMode>,
   document.getElementById('root')
 );

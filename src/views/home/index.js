@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Redirect } from 'react-router-dom'
+import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import jwtDecode from 'jwt-decode'
 import api from '../../services/api'
 
 import userContext from '../../context/userContext'
 
-const Redirect_Page = () => {
+import Menubar from '../../components/MenuBar'
+
+import Intro from '../../views/intro'
+import Login from '../../components/login'
+import Register from '../../components/register'
+
+import Tabela_Pact from '../../components/table_pact'
+
+const Home = () => {
     const [userData, setUserData] = useState({
         token: undefined,
-        user: undefined  
+        user: undefined
     })
 
     const [userProf, setUserProf] = useState(false)
@@ -41,8 +49,8 @@ const Redirect_Page = () => {
                     console.log(erro)
                 })                   
             }
-            catch(e) {
-                console.log(e)                          
+            catch(e) {            
+                console.log(e)
             }         
         }
         checkLogin()
@@ -52,14 +60,17 @@ const Redirect_Page = () => {
         <React.Fragment>         
             <BrowserRouter>
                 <userContext.Provider value={{userData, setUserData}}>
-                    {userProf ? <Redirect to='/profissional' /> : null}
-                    {userDir ? <Redirect to='/diretor' /> : null}
-                    {userNumoa ? <Redirect to='/numoa' /> : null}
-                    {(!userProf && !userDir && !userNumoa) ? <Redirect to='/login' /> : null}                    
+                    <Menubar />
+                    <Switch>
+                        <Route exact path='/' component={Intro} />
+                        <Route path='/login' component={Login} />
+                        <Route path='/register' component={Register} />
+                        <Route path='/diretor' component={Tabela_Pact} />
+                    </Switch>
                 </userContext.Provider>
             </BrowserRouter>            
         </React.Fragment>       
     )
 }
 
-export default Redirect_Page
+export default Home

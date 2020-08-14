@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import {useHistory, Link} from 'react-router-dom'
 import {Jumbotron, Form, Button, Modal} from 'react-bootstrap'
 import api from '../../services/api'
-import LogoNobre from '../../img/nobre.png'
 import './styles.css'
 
 function Login() {
@@ -32,7 +31,8 @@ function Login() {
         })
         .then(resposta => {
             localStorage.setItem('auth-token', resposta.data.token)
-            return history.push('/')
+            history.push('/')
+            return window.location.reload(false)
         })
         .catch(erro => {
             mensagemModal(erro.message)
@@ -41,8 +41,7 @@ function Login() {
     }
 
     return (
-        <div className='login-box'>            
-            <img src={LogoNobre}></img>
+        <div className='login-box'>
             <Jumbotron className='login-form'>
                 <h1>Acessar o Nobre</h1>
                 <Form>
@@ -58,8 +57,7 @@ function Login() {
                     </Form.Group>
                     <Button variant="primary" onClick={Login}>
                         Acessar
-                    </Button>
-                <a href='/register'>Solicitar Acesso</a>
+                    </Button>                
                 </Form>
             </Jumbotron>
 
