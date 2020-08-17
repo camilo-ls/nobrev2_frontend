@@ -1,21 +1,24 @@
-.form-pact {
-    width: 1200px;
+.total-area {
+    width: 1000px;
     margin: auto;
-    margin-top: 50px;
-    background-color: #f6f6f6;
 }
 
-.form-pact button {
-    margin: 5px;
+.tabela-nome {
+    width: 30%;
 }
 
-.pact-header {
-    width: 1200px;
-    margin: auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
+.tabela-cargo {
+    width: 20%;
 }
 
-.salvo {
-    background-color: #bbe1fa;
+.tabela-dias {
+    width: 14%;
+}
+
+.tabela-justificativa {
+    width: 20%;
+}
+
+.tabela-opcoes {
+    width: 16%;
 }

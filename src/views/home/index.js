@@ -34,7 +34,6 @@ const Home = () => {
                 const user = jwtDecode(token)
                 api.post('/auth/verifyToken', {"token": token})
                 .then(resp => {
-                    console.log(resp)
                     if (resp) {
                         setUserData({
                             token,

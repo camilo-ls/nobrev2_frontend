@@ -1,177 +1,108 @@
 import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
-import {Table, Button, Form} from 'react-bootstrap'
+import {Table, Button, Form, Tab} from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import './styles.css'
 
-const TablePact = () => {
-   const [cnes, setCnes] = useState('')
-   const [list, setList] = useState(undefined)
-   const [user, setUser] = useState({
-       id: '',
-       cns: '',
-       cbo: '',
-       cbo_nome: '',
-       ine: '',
-       dias_pact: '',
-       fechado: '',
-       justificativa: ''
-   })
+const TablePact = (props) => {
+    const { userData } = useContext(userContext)
 
-   const { userData, setUserData } = useContext(userContext)   
+    const [ano, setAno] = useState(new Date().getFullYear().toString())
+    const [mes, setMes] = useState(new Date().getMonth().toString())
+    const [funcionario, setFuncionario] = useState({
+        nome: '',
+        ano: '',
+        mes: '',
+        cnes: '',
+        cns: '',
+        coeficiente: '',
+        dias_pactuados: '',
+        fechado: '',
+        justificativa: ''
+    })
+    const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
 
     useEffect(() => {
-        const updateCnes = async () => {
-            setCnes(userData.user.cnes)
+        const fetchListaFuncionarios = async () => {
+            if (userData.user) {
+                const ano_ = new Date().getFullYear().toString()
+                const mes_ = new Date().getMonth().toString()
+                await api.get(`/pact/unidade/${userData.user.cnes}/${ano_}/${mes_}`)
+                .then(resp => {
+                    if (resp) setListaFuncionarios(resp.data)                    
+                })
+                .catch(e => console.log(e))                
+            }
         }
-        const updateList = async () => {
-            const cnes = userData.cnes
-            api.get(`/cnes/${cnes}/func`)
-            .then(resp => {
-                setList(resp.data)
-                console.log(resp.data)
-            }
-        )}
-        updateCnes()  
-        updateList()
-        
-    }, [])
+        const fetchData = async () => {
 
-    const confirmFunc = (id) => {
-        var linha = document.getElementById(id)
-        linha.className = 'salvo'
+        }
+        fetchListaFuncionarios()
+    }, [userData])
+
+    const faltamDias = () => {
+        const date = new Date()
+        const time = new Date(date.getTime())
+        time.setMonth(date.getMonth() + 1)
+        time.setDate(0)
+        const days = time.getDate() > date.getDate() ? time.getDate() - date.getDate() : 0
+        return days
     }
 
-    const updateState = (user, event) => {
-        user[event.target.name] = event.target.value      
+    const fechar = (func) => {
+        console.log(func)
     }
-
-    const getJustificativa = (user) => {
-        const cns = user.cns
-        api.get(`/cnes/pact/${cns}`)
-        .then(justificativa => {
-            if (justificativa) {
-                console.log(justificativa)
-            }
-        })
-    }
-
-    const salvarPact = (user) => {
-        this.confirmFunc(user.id)
-        if (!user.dias_pact) user.dias_pact = 22
-        if (!user.justificativa) user.justificativa = ''
-        let data = new Date()
-        user.mes = data.getMonth()
-        user.ano = data.getFullYear()
-        console.log(user)
-        api.post(`/cnes/pact`, user)
-        .then(resp => {
-            this.confirmFunc(user.id)
-            console.log(resp)
-        })
-    }   
-
-    const gerarPDF = (user) => {
-        
-    }
-
-    const renderRow = (user) => {
+    
+    const MontarTabelaLinha = (func) => {
         return (
-            <tr id={user.id}>
-                <td>{user.id}</td>
-                <td>{user.nome}</td>
-                <td>{user.cns}</td>
-                <td>{user.cbo_nome}</td>
-                <td>{user.ine}</td>
+            <tr key={func.cns}>
+                <td>{func.nome}</td>
+                <td>{func.cargo}</td>                
                 <td>
-                    <Form>
-                        <Form.Control as="select" defaultValue='22' className="mr-sm-2" name="dias_pact" onChange={e => updateState(user, e)} custom>
-                            <option value='31'>31</option>
-                            <option value='30'>30</option>
-                            <option value='29'>29</option>
-                            <option value='28'>28</option>
-                            <option value='27'>27</option>
-                            <option value='26'>26</option>
-                            <option value='25'>25</option>
-                            <option value='24'>24</option>
-                            <option value='23'>23</option>
-                            <option value='22'>22</option>
-                            <option value='21'>21</option>
-                            <option value='20'>20</option>
-                            <option value='19'>19</option>
-                            <option value='18'>18</option>
-                            <option value='17'>17</option>
-                            <option value='16'>16</option>
-                            <option value='15'>15</option>
-                            <option value='14'>14</option>
-                            <option value='13'>13</option>
-                            <option value='12'>12</option>
-                            <option value='11'>11</option>
-                            <option value='10'>10</option>
-                            <option value='9'>9</option>
-                            <option value='8'>8</option>
-                            <option value='7'>7</option>
-                            <option value='6'>6</option>
-                            <option value='5'>5</option>
-                            <option value='4'>4</option>
-                            <option value='3'>3</option>
-                            <option value='2'>2</option>
-                            <option value='1'>1</option>
-                            <option value='0'>0</option>
-                        </Form.Control>
-                    </Form>
-                </td>
+                    <Form.Control as='select' className='day-picker' id='day-picker' defaultValue={func.dias_pactuados}>
+                        <option value='0'>0</option>
+                    </Form.Control>
+                </td>                    
+                <td>{func.justificativa}</td>
                 <td>
-                    <Form.Group>
-                        <Form.Control type='text' name='just' placeholder='Justificativa' onChange={e => this.updateState(user, e)} />
-                    </Form.Group>
-                </td>
-                <td>
-                    <Button variant='success' onClick={e => this.salvarPact(user)}>Salvar</Button>
-                    <Button variant='warning' onClick={e => this.gerarPDF(user)}>PDF</Button>
+                    <Button variant='primary' onClick={() => fechar(func)}>Fechar</Button>
+                    <Button variant='warning'>PDF</Button>
                 </td>
             </tr>
         )
     }
 
-    const renderRows = () => {
-        return list.map(user => {
-            renderRow(user)
-        })
-    }
 
-    const renderTable = () => {
-        return (
-            <Table className='form-pact'>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>NOME</th>
-                        <th>CNS</th>
-                        <th>CARGO</th>
-                        <th>INE</th>
-                        <th>DIAS DE TRABALHO</th>
-                        <th>JUSTIFICATIVA</th>
-                        <th>AÇÕES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {renderRows()}
-                </tbody>
-            </Table>
-        )
-    }
-    
     return (
-        <React.Fragment>
-            <div className='pact-header'>
-                <h1> Pactuação dos Profissionais</h1>
-                <p>Esta página será utilizada com a finalidade de realizar a pactuação mensal dos dias para cada profissionais</p>    
-            </div>               
-            {renderTable()}
-        </React.Fragment>
-    )    
+        <div className='total-area'>
+            {userData.user && userData.user.nivel >= 1 ?
+                <>
+                    <h1>Tabela de Pactuação</h1>
+
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th className='tabela-nome'>Nome</th>
+                                <th className='tabela-cargo'>Cargo</th>
+                                <th className='tabela-dias'>Dias Pactuados</th>
+                                <th className='tabela-justificativa'>Justificativa</th>
+                                <th className='tabela-opcoes'>Opções</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {listaFuncionarios ? listaFuncionarios.map(MontarTabelaLinha) : null}
+                        </tbody>
+                    </Table>
+                </>
+            :
+                <>
+                    <h1>ERRO!</h1>
+                    <h3>Você não possui as permissões necessárias para acessar esta página.</h3>
+                </>
+            }            
+        </div>
+    )
 }
 
 export default TablePact
