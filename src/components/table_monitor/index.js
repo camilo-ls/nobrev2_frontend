@@ -7,7 +7,7 @@ import TabelaLinha from '../table_pact_linha'
 
 import './styles.css'
 
-const TablePact = (props) => {
+const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
