@@ -34,3 +34,11 @@
     grid-template-columns: 40% 20% 40%;
     text-align: center;
 }
+
+.sub-menu {
+    margin: 5px;
+    text-align: right;
+    display: grid;
+    grid-template-columns: 33% 34% 33%;
+    
+}

@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
-import {Table, Button, Form, Modal} from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_pact_linha'
@@ -84,6 +84,13 @@ const TablePact = (props) => {
                             <span>MÊS DE PACTUAÇÃO:</span>
                             <h4>{mesesIdx[mes]}</h4>
                         </div>
+                    </div>
+                    <div className='sub-menu'>
+                        <div></div>
+                        <div></div>
+                        <div>
+                            <Button variant='success'>Gerar PDFs</Button>
+                        </div>                        
                     </div>
                     <Table>
                         <thead>

@@ -6,3 +6,15 @@
     margin: auto;
     width: 450px;
 }
+
+#proc-cod {
+    width: 10%;
+}
+
+#proc-nome {
+    width: 80%;
+}
+
+#proc-qt {
+    width: 10%;
+}

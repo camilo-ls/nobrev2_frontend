@@ -1,5 +1,6 @@
-import React, { useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import api from '../../services/api'
 
 import './styles.css'
@@ -71,9 +72,9 @@ const TabelaLinha = (props) => {
     return (
         <>
             <tr key={props.func.cns} className={fechado ? 'func-pactuado' : 'func-aberto'}>
-                <td>{props.func.nome}</td>
-                <td>{props.func.cargo}</td>                
-                <td>
+                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns}}}>{props.func.nome}</Link></td>
+                <td className='tabela-cargo'>{props.func.cargo}</td>                
+                <td className='tabela-dias'>
                     <Form.Control as='select' className='day-picker' value={diasPactuados} onChange={e => setDiasPactuados(e.target.value)}>
                         {maxDias >= 31 ? <option value='31'>31</option> : null}
                         {maxDias >= 30 ? <option value='30'>30</option> : null}
@@ -109,7 +110,7 @@ const TabelaLinha = (props) => {
                         {maxDias >= 0 ? <option value='0'>0</option> : null} 
                     </Form.Control>
                 </td>                    
-                <td>
+                <td className='tabela-justificativa'>
                     {diasPactuados < diasUteisMes ?
                         <Form.Control as='select' value={justificativa} onChange={e => setJustificativa(e.target.value)}>
                             <option>{justificativa}</option>
@@ -130,9 +131,9 @@ const TabelaLinha = (props) => {
                         </Form.Control>
                     : null}
                 </td>
-                <td>
+                <td className='tabela-botoes'>
                     <Button className='botao-pact' variant='primary' onClick={(e) => fechar(props.func, e)}>Fechar</Button>
-                    <Button className='botao-pact' variant='warning'>PDF</Button>
+                    <Button className='botao-pact' variant='success'>PDF</Button>
                 </td>
             </tr>
             <Modal show={showDialog} onHide={fecharDialog}>

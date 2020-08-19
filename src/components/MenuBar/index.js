@@ -22,7 +22,7 @@ function MenuBar(props) {
           <div className='menu-nav'>
           {userData.user && userData.user.nivel == 0 ? (
                 <>                    
-                    <a className='menu-link' href="#">Minhas Metas</a>                        
+                    <a className='menu-link' href="/profissional">Minhas Metas</a>                        
                 </>
             ) : null}
             {userData.user && userData.user.nivel == 1 ? (

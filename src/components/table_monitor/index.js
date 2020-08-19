@@ -1,21 +1,23 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import {Table, Button, Form, Modal} from 'react-bootstrap'
+import { Table } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
-import TabelaLinha from '../table_pact_linha'
+import TabelaLinha from '../table_monitor_linha'
+
+import procPDF from '../pdfProcedimento'
+import { PDFDownloadLink } from '@react-pdf/renderer'
 
 import './styles.css'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
-    const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
-    const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
+    const [listaProcedimentos, setListaProcedimentos] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -29,74 +31,76 @@ const TableMonitor = (props) => {
     }
 
     useEffect(() => {
-        const fetchListaFuncionarios = async () => {
-            if (userData.user) {                
-                await api.get(`/pact/unidade/${userData.user.cnes}/${ano}/${mes}`)
+        const fetchListaProcedimentos = async () => {
+            if (props.location.state) {
+                await api.get(`prof/pmp/${props.location.state.cns}/${ano}/${mes}`)
                 .then(resp => {
-                    if (resp) setListaFuncionarios(resp.data)                    
+                    if (resp) setListaProcedimentos(resp.data)
                 })
-                .catch(e => console.log(e))                
+                .catch(e => console.log(e))
             }
+            else {
+                if (userData.user) {
+                    console.log(userData)          
+                    await api.get(`/prof/pmp/${userData.user.cns}/${ano}/${mes}`)
+                    .then(resp => {
+                        if (resp) setListaProcedimentos(resp.data)                    
+                    })
+                    .catch(e => console.log(e))                
+                }
+            }            
         }
         const fetchData = async () => {
             await api.get('/pact/data')
             .then(resp => {
                 setAno(resp.data.ano)
-                setMes(resp.data.mes + 1)
-            })
-            .catch(e => console.log(e))
-        }
-        const fetchMaxDias = async () => {
-            await api.get(`/pact/dias_mes/${ano}/${mes}`)
-            .then(resp => {
-                setMaxDias(resp.data.dias)
+                if (props.location.state) setMes(resp.data.mes + 1)
+                else setMes(resp.data.mes)
+                
             })
             .catch(e => console.log(e))
         }
         fetchData()
-        fetchListaFuncionarios()
-        fetchMaxDias()
-    }, [userData, ano, mes])
+        fetchListaProcedimentos()        
+    }, [userData, ano, mes])   
 
-    const faltamDias = () => {
-        const date = new Date()
-        const time = new Date(date.getTime())
-        time.setMonth(date.getMonth() + 1)
-        time.setDate(0)
-        const days = time.getDate() > date.getDate() ? time.getDate() - date.getDate() : 0
-        return days
-    }
-
-    const MontarTabelaLinha = (func) => {
+    const MontarTabelaLinha = (proc) => {
         return (
-           <TabelaLinha func={func} ano={ano} mes={mes} cnes={userData.user.cnes} maxDias={maxDias}/>
+           <TabelaLinha proc={proc} ano={ano} mes={mes} />
         )
     }
 
     return (
         <div className='total-area'>
-            {userData.user && userData.user.nivel >= 1 ?
+            {userData.user && userData.user.nivel >= 0 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h1>Tabela de Pactuação</h1>
+                        <h1>Tabela de Metas</h1>
                         <span />
                         <div>
                             <span>MÊS DE PACTUAÇÃO:</span>
                             <h4>{mesesIdx[mes]}</h4>
                         </div>
                     </div>
-                    <Table>
+                    <div className='sub-menu'>
+                        <PDFDownloadLink
+                        document={
+                            <procPDF data={listaProcedimentos} />
+                        }
+                        fileName='meta.pdf'
+                        >Baixar PDFs
+                        </PDFDownloadLink>
+                    </div>
+                    <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <th className='tabela-nome'>Nome</th>
-                                <th className='tabela-cargo'>Cargo</th>
-                                <th className='tabela-dias'>Dias Pactuados</th>
-                                <th className='tabela-justificativa'>Justificativa</th>
-                                <th className='tabela-opcoes'>Opções</th>
+                                <th className='tabela-cod'>Código</th>
+                                <th className='tabela-nome'>Procedimento</th>
+                                <th className='tabela-qt'>Meta</th>                                
                             </tr>
                         </thead>
                         <tbody>
-                            {listaFuncionarios ? listaFuncionarios.map(MontarTabelaLinha) : null}
+                            {listaProcedimentos ? listaProcedimentos.map(MontarTabelaLinha) : null}
                         </tbody>
                     </Table>                    
                 </>
@@ -110,4 +114,4 @@ const TableMonitor = (props) => {
     )
 }
 
-export default TablePact
+export default TableMonitor

@@ -3,30 +3,6 @@
     margin: auto;
 }
 
-.tabela-nome {
-    width: 30%;
-}
-
-.tabela-cargo {
-    width: 20%;
-}
-
-.tabela-dias {
-    width: 14%;
-}
-
-.tabela-justificativa {
-    width: 20%;
-}
-
-.tabela-opcoes {
-    width: 16%;
-}
-
-.botao-pact {
-    margin: 1px;
-}
-
 .cabeçalho-tabela {
     width: 1000px;
     margin: auto;

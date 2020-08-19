@@ -12,6 +12,9 @@ import Login from '../../components/login'
 import Register from '../../components/register'
 
 import Tabela_Pact from '../../components/table_pact'
+import Tabela_Mon from '../../components/table_monitor'
+
+import gerarPDF from '../../components/pdfProcedimento'
 
 const Home = () => {
     const [userData, setUserData] = useState({
@@ -39,9 +42,6 @@ const Home = () => {
                             token,
                             user
                         })
-                        if (user.nivel == 0) setUserProf(true)
-                        if (user.nivel == 1) setUserDir(true)
-                        if (user.nivel == 2) setUserNumoa(true)
                     }
                 })
                 .catch(erro => {
@@ -65,6 +65,8 @@ const Home = () => {
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />
                         <Route path='/diretor' component={Tabela_Pact} />
+                        <Route path='/profissional' component={Tabela_Mon} />
+                        <Route path='/gerarPDF' component={gerarPDF} /> 
                     </Switch>
                 </userContext.Provider>
             </BrowserRouter>            
