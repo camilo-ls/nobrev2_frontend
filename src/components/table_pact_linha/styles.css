@@ -1,5 +1,5 @@
 .func-pactuado {
-    background-color: cornflowerblue;
+    background-color: rgb(244, 247, 246);
 }
 
 .justificativa-dialog {
@@ -8,5 +8,13 @@
 }
 
 .func-pactuado .nome-prof {
+    color: black;
+}
+
+.botao-pact {
+    color: white;
+}
+
+.nome-prof {
     color: black;
 }

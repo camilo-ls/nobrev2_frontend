@@ -32,11 +32,13 @@ const TabelaLinha = (props) => {
             })
             .catch(e => console.log(e))
         }
+
+              
         fetchJustificativa()
         fetchDiasPactuados()
         fetchFechado()
         fetchDiasUteis()
-        fetchMaxDias()
+        fetchMaxDias()        
     }, [])
 
     const abrirDialog = (msg) => {
@@ -48,7 +50,7 @@ const TabelaLinha = (props) => {
         setShowDialog(false)
     }
 
-    const fechar = async (func, e) => {
+    const fechar = async () => {
         const novoFunc = {
             nome: props.func.nome,
             cns: props.func.cns,
@@ -132,8 +134,8 @@ const TabelaLinha = (props) => {
                     : null}
                 </td>
                 <td className='tabela-botoes'>
-                    <Button className='botao-pact' variant='primary' onClick={(e) => fechar(props.func, e)}>Fechar</Button>
-                    <Button className='botao-pact' variant='success'>PDF</Button>
+                    <Button className='botao-pact' variant='outline-primary' onClick={(e) => fechar(props.func, e)}>Fechar</Button>
+                    <Button className='botao-pdf' variant='outline-success'>PDF</Button>
                 </td>
             </tr>
             <Modal show={showDialog} onHide={fecharDialog}>

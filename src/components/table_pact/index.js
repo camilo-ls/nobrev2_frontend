@@ -81,7 +81,7 @@ const TablePact = (props) => {
                         <h1>Tabela de Pactuação</h1>
                         <span />
                         <div>
-                            <span>MÊS DE PACTUAÇÃO:</span>
+                            <h4>Mês de Pactuação:</h4>
                             <h4>{mesesIdx[mes]}</h4>
                         </div>
                     </div>
@@ -89,7 +89,7 @@ const TablePact = (props) => {
                         <div></div>
                         <div></div>
                         <div>
-                            <Button variant='success'>Gerar PDFs</Button>
+                            <Button variant='outline-success'>Gerar PDFs</Button>
                         </div>                        
                     </div>
                     <Table>

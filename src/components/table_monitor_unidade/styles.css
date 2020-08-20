@@ -1,0 +1,19 @@
+.total-area {
+    width: 1000px;
+    margin: auto;
+}
+
+.cabeçalho-tabela {
+    width: 1000px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 40% 20% 40%;
+    text-align: center;
+}
+
+.mes-select {
+    margin: auto;
+    width: 200px;
+    display: grid;
+    grid-template-columns: 60% 40%;
+}

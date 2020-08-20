@@ -1,12 +1,9 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import { Table } from 'react-bootstrap'
+import { Table, Form } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_monitor_linha'
-
-import procPDF from '../pdfProcedimento'
-import { PDFDownloadLink } from '@react-pdf/renderer'
 
 import './styles.css'
 
@@ -14,6 +11,8 @@ const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
+    const [maxAno, setMaxAno] = useState('')
+    const [maxMes, setMaxMes] = useState('')
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
@@ -33,7 +32,7 @@ const TableMonitor = (props) => {
     useEffect(() => {
         const fetchListaProcedimentos = async () => {
             if (props.location.state) {
-                await api.get(`prof/pmp/${props.location.state.cns}/${ano}/${mes}`)
+                await api.get(`/pact/unidade_pact/${props.location.state.cnes}/${ano}/${mes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
                 })
@@ -42,7 +41,7 @@ const TableMonitor = (props) => {
             else {
                 if (userData.user) {
                     console.log(userData)          
-                    await api.get(`/prof/pmp/${userData.user.cns}/${ano}/${mes}`)
+                    await api.get(`/pact/unidade_pact/${userData.user.cnes}/${ano}/${mes}`)
                     .then(resp => {
                         if (resp) setListaProcedimentos(resp.data)                    
                     })
@@ -55,12 +54,13 @@ const TableMonitor = (props) => {
             .then(resp => {
                 setAno(resp.data.ano)
                 if (props.location.state) setMes(resp.data.mes + 1)
-                else setMes(resp.data.mes)
-                
+                else setMes(resp.data.mes + 1)
+                setMaxAno(resp.data.ano)
+                setMaxMes(resp.data.mes + 1)                
             })
             .catch(e => console.log(e))
         }
-        fetchData()
+        if (mes == '' || ano == '') fetchData()
         fetchListaProcedimentos()        
     }, [userData, ano, mes])   
 
@@ -72,14 +72,32 @@ const TableMonitor = (props) => {
 
     return (
         <div className='total-area'>
-            {userData.user && userData.user.nivel >= 0 ?
+            {userData.user && userData.user.nivel >= 1 ?
                 <>
                     <div className='cabeçalho-tabela'>
                         <h1>Tabela de Metas</h1>
                         <span />
                         <div>
                             <span>MÊS DE PACTUAÇÃO:</span>
-                            <h4>{mesesIdx[mes]}</h4>
+                            <Form className='mes-select'>
+                                <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => setMes(e.target.value)}>
+                                    {maxMes >= 1 ? <option value='1'>Janeiro</option> : null}
+                                    {maxMes >= 2 ? <option value='2'>Fevereiro</option> : null}
+                                    {maxMes >= 3 ? <option value='3'>Março</option> : null}
+                                    {maxMes >= 4 ? <option value='4'>Abril</option> : null}
+                                    {maxMes >= 5 ? <option value='5'>Maio</option> : null}
+                                    {maxMes >= 6 ? <option value='6'>Junho</option> : null}
+                                    {maxMes >= 7 ? <option value='7'>Julho</option> : null}
+                                    {maxMes >= 8 ? <option value='8'>Agosto</option> : null}
+                                    {maxMes >= 9 ? <option value='9'>Setembro</option> : null}
+                                    {maxMes >= 10 ? <option value='10'>Outubro</option> : null}
+                                    {maxMes >= 11 ? <option value='11'>Novembro</option> : null}
+                                    {maxMes >= 12 ? <option value='12'>Dezembro</option> : null}
+                                </Form.Control>
+                                <Form.Control as='select' size='sm' custom>
+                                    <option value='2020'>2020</option>
+                                </Form.Control>
+                            </Form>
                         </div>
                     </div>
                     <div className='sub-menu'>
