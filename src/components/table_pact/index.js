@@ -78,13 +78,14 @@ const TablePact = (props) => {
             {userData.user && userData.user.nivel >= 1 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h1>Tabela de Pactuação</h1>
+                        <h4>Tabela de Pactuação</h4>
                         <span />
                         <div>
                             <h4>Mês de Pactuação:</h4>
                             <h4>{mesesIdx[mes]}</h4>
                         </div>
                     </div>
+                    <hr />
                     <div className='sub-menu'>
                         <div></div>
                         <div></div>

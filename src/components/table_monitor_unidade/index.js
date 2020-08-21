@@ -75,7 +75,7 @@ const TableMonitor = (props) => {
             {userData.user && userData.user.nivel >= 1 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h1>Tabela de Metas</h1>
+                        <h4>Tabela de Metas</h4>
                         <span />
                         <div>
                             <span>MÊS DE PACTUAÇÃO:</span>

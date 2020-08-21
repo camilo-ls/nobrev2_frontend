@@ -1,0 +1,6 @@
+.disa-lista-pactuados {
+    width: 1000px;
+    display: grid;
+    grid-template-columns: 48% 2% 48%;
+    align-items: flex-start;  
+}

@@ -27,14 +27,6 @@
     margin: 1px;
 }
 
-.cabeçalho-tabela {
-    width: 1000px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: 40% 20% 40%;
-    text-align: center;
-}
-
 .sub-menu {
     margin: 5px;
     text-align: right;

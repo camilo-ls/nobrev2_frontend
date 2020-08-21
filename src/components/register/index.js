@@ -27,6 +27,9 @@ function Register() {
             buscarCnes(resp.data.cnes)
             buscarCbo(resp.data.cbo)
         })
+        .catch(e => {
+            openModal(e.message)
+        })
     }
     
     const buscarCnes = cnes => {
@@ -60,7 +63,10 @@ function Register() {
        .then(resp => {
            openModal(resp.data.msg)           
         })
-       .catch(e => openModal(e.message))
+       .catch(e => {
+           console.log(e)
+           openModal(e.message)
+        })
     }
 
     const openModal = (msg) => {

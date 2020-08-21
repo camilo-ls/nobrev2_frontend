@@ -14,6 +14,8 @@ import Register from '../../components/register'
 import Tabela_Pact from '../../components/table_pact'
 import Tabela_Mon from '../../components/table_monitor'
 import Tabela_Mon_Unidade from '../../components/table_monitor_unidade'
+import Tabela_Disa from '../../components/tablePactDisa'
+import Tabela_Mon_Disa from '../../components/tableMonitorDisa'
 
 import gerarPDF from '../../components/pdfProcedimento'
 
@@ -65,6 +67,8 @@ const Home = () => {
                         <Route exact path='/' component={Intro} />
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />
+                        <Route exact path='/disa' component={Tabela_Disa} />
+                        <Route path='/disa/monitoramento' component={Tabela_Mon_Disa} />
                         <Route exact path='/diretor' component={Tabela_Pact} />
                         <Route path='/diretor/monitoramento' component={Tabela_Mon_Unidade} />
                         <Route path='/profissional' component={Tabela_Mon} />
