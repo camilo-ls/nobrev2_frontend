@@ -71,7 +71,7 @@ const TablePact = (props) => {
         return (
            <TabelaLinha func={func} ano={ano} mes={mes} cnes={userData.user.cnes} maxDias={maxDias}/>
         )
-    }
+    }   
 
     return (
         <div className='total-area'>
@@ -89,9 +89,7 @@ const TablePact = (props) => {
                     <div className='sub-menu'>
                         <div></div>
                         <div></div>
-                        <div>
-                            <Button variant='outline-success'>Gerar PDFs</Button>
-                        </div>                        
+                        <div></div>                        
                     </div>
                     <Table>
                         <thead>

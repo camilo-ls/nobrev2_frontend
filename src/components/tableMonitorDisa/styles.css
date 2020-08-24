@@ -1,0 +1,6 @@
+.waiting-load {
+    margin: auto;
+    width: 600px;
+    display: grid;
+    grid-template-columns: 10% 90%;
+}

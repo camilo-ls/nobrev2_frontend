@@ -3,17 +3,16 @@ import api from '../../services/api'
 import { Table, Button, Form } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
-import TabelaLinha from '../tablePactDisaLinha'
+import TabelaLinha from '../tableMonitorSEMSALinha'
 
-import './styles.css'
-
-const TablePactDisa = (props) => {
+const TablePactSemsa = (props) => {
     const { userData } = useContext(userContext)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')    
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
+    const [disa, setDisa] = useState('NORTE')
     const [listaUnidades, setListaUnidades] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
@@ -39,14 +38,14 @@ const TablePactDisa = (props) => {
 
         const fetchListaUnidades = async () => {
             if (props.location.state) {
-                await api.get(`/pact/faltam_pactuar/${props.location.state.cnes}/${ano}/${mes}`)
+                await api.get(`/pact/faltam_pactuar/${disa}/${ano}/${mes}`)
                 .then(resp => {
                     if (resp) setListaUnidades(resp.data)
                 })
                 .catch(e => console.log(e.message))
             }
             else if (userData.user) {
-                await api.get(`/pact/faltam_pactuar/${userData.user.cnes}/${ano}/${mes}`)
+                await api.get(`/pact/faltam_pactuar/${disa}/${ano}/${mes}`)
                 .then(resp => {
                     if (resp) setListaUnidades(resp.data)
                 })
@@ -72,10 +71,10 @@ const TablePactDisa = (props) => {
 
     return (
         <div className='total-area'>
-            {userData.user && userData.user.nivel >= 2 ?
+            {userData.user && userData.user.nivel >= 3 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h4>Monitoramento por Distrito</h4>
+                        <h4>Pactuação das Unidades</h4>
                         <span />
                         <div>
                             <h4>Mês de Pactuação:</h4>
@@ -85,7 +84,15 @@ const TablePactDisa = (props) => {
                     <div className='sub-menu'>
                         <div></div>
                         <div></div>
-                        <div></div>                        
+                        <div>
+                            <Form.Control as='select' defaultValue={disa} onChange={e => setDisa(e.target.value)}>
+                                <option value='NORTE'>Norte</option>
+                                <option value='SUL'>Sul</option>
+                                <option value='LESTE'>Leste</option>
+                                <option value='OESTE'>Oeste</option>
+                                <option value='RURAL'>Rural</option>
+                            </Form.Control>
+                        </div>                        
                     </div>
                     <div className='disa-lista-pactuados'>
                         <div className='table_nao_pactuados'>
@@ -127,4 +134,4 @@ const TablePactDisa = (props) => {
     )
 }
 
-export default TablePactDisa
+export default TablePactSemsa

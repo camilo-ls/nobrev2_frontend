@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import api from '../../services/api'
+import jspdf from 'jspdf'
+import 'jspdf-autotable'
 
 import './styles.css'
 
@@ -71,10 +73,36 @@ const TabelaLinha = (props) => {
         .catch(e => abrirDialog(e.message))
     }
 
+    const imprimirPDF = async () => {
+        const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+        var doc = new jspdf('p', 'pt', 'a4')
+        const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]        
+       await api.get(`prof/pmp/${props.cnes}/${props.func.cns}/${props.ano}/${props.mes}`)
+       .then(resp => {
+            if (resp) {                
+                let nome = props.func.nome
+                doc.autoTable({                
+                    head: [['Profissional', 'Ano', 'Mês']],
+                    body: [[nome, props.ano, mesesIdx[props.mes]]]
+                })
+                doc.autoTable({
+                    head: cabeçalho,
+                    body: resp.data.map(proc => {
+                        return [proc.cod, proc.nome, proc.quantidade]
+                    }),
+                    margin: { top: 100 },
+                    font: 'helvetica',
+                    fontStyle: 'normal'
+                })
+                doc.save('Meta Individual - ' + nome + '.pdf')
+            }
+       })
+    }
+
     return (
         <>
             <tr key={props.func.cns} className={fechado ? 'func-pactuado' : 'func-aberto'}>
-                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns}}}>{props.func.nome}</Link></td>
+                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns, cnes: props.cnes, nome: props.func.nome}}}>{props.func.nome}</Link></td>
                 <td className='tabela-cargo'>{props.func.cargo}</td>                
                 <td className='tabela-dias'>
                     <Form.Control as='select' className='day-picker' value={diasPactuados} onChange={e => setDiasPactuados(e.target.value)}>
@@ -135,7 +163,7 @@ const TabelaLinha = (props) => {
                 </td>
                 <td className='tabela-botoes'>
                     <Button className='botao-pact' variant='outline-primary' onClick={(e) => fechar(props.func, e)}>Fechar</Button>
-                    <Button className='botao-pdf' variant='outline-success'>PDF</Button>
+                    <Button className='botao-pdf' variant='outline-success' onClick={e => imprimirPDF(e)}>PDF</Button>
                 </td>
             </tr>
             <Modal show={showDialog} onHide={fecharDialog}>

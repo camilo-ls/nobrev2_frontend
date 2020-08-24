@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import { Table, Form } from 'react-bootstrap'
+import { Table, Form, Spinner } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_monitor_linha'
+
+import './styles.css'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
@@ -78,7 +80,7 @@ const TableMonitor = (props) => {
                         <div>
                             <span>MÊS DE PACTUAÇÃO:</span>
                             <Form className='mes-select'>
-                                <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => setMes(e.target.value)}>
+                                <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => { setListaProcedimentos(undefined); setMes(e.target.value); }}>
                                     {maxMes >= 1 ? <option value='1'>Janeiro</option> : null}
                                     {maxMes >= 2 ? <option value='2'>Fevereiro</option> : null}
                                     {maxMes >= 3 ? <option value='3'>Março</option> : null}
@@ -112,7 +114,8 @@ const TableMonitor = (props) => {
                         <tbody>
                             {listaProcedimentos ? listaProcedimentos.map(MontarTabelaLinha) : null}
                         </tbody>
-                    </Table>                    
+                    </Table>
+                    {listaProcedimentos ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                 
                 </>
             :
                 <>

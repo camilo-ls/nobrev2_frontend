@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import { Table } from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_monitor_linha'
 
-import procPDF from '../pdfProcedimento'
-import { PDFDownloadLink } from '@react-pdf/renderer'
+import jspdf from 'jspdf'
+import 'jspdf-autotable'
 
 import './styles.css'
 
@@ -33,7 +33,7 @@ const TableMonitor = (props) => {
     useEffect(() => {
         const fetchListaProcedimentos = async () => {
             if (props.location.state) {
-                await api.get(`prof/pmp/${props.location.state.cns}/${ano}/${mes}`)
+                await api.get(`prof/pmp/${props.location.state.cnes}/${props.location.state.cns}/${ano}/${mes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
                 })
@@ -41,7 +41,7 @@ const TableMonitor = (props) => {
             }
             else {
                 if (userData.user) {      
-                    await api.get(`/prof/pmp/${userData.user.cns}/${ano}/${mes}`)
+                    await api.get(`/prof/pmp/${userData.user.cnes}/${userData.user.cns}/${ano}/${mes}`)
                     .then(resp => {
                         if (resp) setListaProcedimentos(resp.data)                    
                     })
@@ -69,6 +69,30 @@ const TableMonitor = (props) => {
         )
     }
 
+    const imprimirPDF = () => {
+        var doc = new jspdf('p', 'pt', 'a4')
+        const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]
+        if (listaProcedimentos) {
+            let nome = ''
+            if (props.location.state) nome = props.location.state.nome
+            else nome = userData.user.nome                    
+            doc.autoTable({                
+                head: [['Profissional', 'Ano', 'Mês']],
+                body: [[nome, ano, mesesIdx[mes]]]
+            })
+            doc.autoTable({
+                head: cabeçalho,
+                body: listaProcedimentos.map(proc => {
+                    return [proc.cod, proc.nome, proc.quantidade]
+                }),
+                margin: { top: 100 },
+                font: 'helvetica',
+                fontStyle: 'normal'
+            })
+            doc.save('Meta Individual - ' + nome + '.pdf')
+        }
+    }
+
     return (
         <div className='total-area'>
             {userData.user && userData.user.nivel >= 0 ?
@@ -82,7 +106,9 @@ const TableMonitor = (props) => {
                         </div>
                     </div>
                     <div className='sub-menu'>
-                        
+                        <div></div>
+                        <div></div>
+                        <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
                     </div>
                     <Table striped bordered hover>
                         <thead>
