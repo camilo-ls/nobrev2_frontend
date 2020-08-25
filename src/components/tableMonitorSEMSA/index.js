@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
-import { Table, Button, Form } from 'react-bootstrap'
+import { Table, Form, Spinner } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../tableMonitorSEMSALinha'
@@ -121,6 +121,7 @@ const TablePactSemsa = (props) => {
                                     {listaUnidades ? listaUnidades.map(MontarTabelaLinhaPact) : null}
                                 </tbody>
                             </Table>
+                            {listaUnidades ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}
                         </div>
                     </div>                
                 </>

@@ -11,7 +11,8 @@ function Login() {
     const [ModalMensagem, setModalMensagem] = useState('')
     let history = useHistory()
 
-    const openModal = () => {
+    const openModal = (msg) => {
+        setModalMensagem(msg)
         setModalOpen(true)
     }
 
@@ -19,12 +20,7 @@ function Login() {
         setModalOpen(false)        
     }
 
-    const mensagemModal = (mensagem) => {
-        setModalMensagem(mensagem)
-    }
-
     const Login = async () => {
-        console.log(userEmail, userPassword)
         api.post('/auth/login', {
             email: userEmail,
             password: userPassword
@@ -34,9 +30,8 @@ function Login() {
             history.push('/')
             return window.location.reload(false)
         })
-        .catch(erro => {
-            mensagemModal(erro.message)
-            openModal()
+        .catch(async erro => {
+            if (erro) openModal(erro.response.data.message)        
         })        
     }
 
@@ -62,7 +57,7 @@ function Login() {
             </Jumbotron>
 
             <Modal show={ModalAviso} onHide={closeModal}>
-                <h1 value={ModalMensagem}></h1>
+                <h5>{ModalMensagem}</h5>
                     <Button variant="primary" onClick={closeModal}>
                         Ok
                     </Button>

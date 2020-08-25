@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import { Table, Button } from 'react-bootstrap'
+import { Table, Button, Spinner } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_monitor_linha'
@@ -121,7 +121,8 @@ const TableMonitor = (props) => {
                         <tbody>
                             {listaProcedimentos ? listaProcedimentos.map(MontarTabelaLinha) : null}
                         </tbody>
-                    </Table>                    
+                    </Table>
+                    {listaProcedimentos ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                   
                 </>
             :
                 <>

@@ -28,7 +28,7 @@ function Register() {
             buscarCbo(resp.data.cbo)
         })
         .catch(e => {
-            openModal(e.message)
+            openModal(e.response.data.message)
         })
     }
     
@@ -64,8 +64,7 @@ function Register() {
            openModal(resp.data.msg)           
         })
        .catch(e => {
-           console.log(e)
-           openModal(e.message)
+           openModal(e.response.data.message)
         })
     }
 
@@ -125,7 +124,7 @@ function Register() {
             </Jumbotron>
             
             <Modal show={ModalAviso} onHide={closeModal}>
-                <p> { ModalMensagem } </p>
+                <h5> {ModalMensagem} </h5>
                 <Button variant="primary" onClick={closeModal}>
                     Ok
                 </Button>

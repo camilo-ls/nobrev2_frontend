@@ -55,7 +55,7 @@ function MenuBar(props) {
                 <>
                     <span>Logado(a) como:</span><br/>              
                     <span className='user-name'>{userData.user.nome}</span><br />
-                    <a className='link-logout' href="#" onClick={logout}>Sair</a>
+                    <a className='link-logout' href="#" onClick={logout}>SAIR</a>
                 </>
               ) : null}
           </div>

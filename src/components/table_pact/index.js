@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
-import { Table, Button } from 'react-bootstrap'
+import { Table, Button, Spinner } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_pact_linha'
@@ -9,6 +9,7 @@ import './styles.css'
 
 const TablePact = (props) => {
     const { userData } = useContext(userContext)
+    const [nomeUnidade, setNomeUnidade] = useState('')
     const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
@@ -53,9 +54,19 @@ const TablePact = (props) => {
             })
             .catch(e => console.log(e))
         }
+        const fetchNomeUnidade = async () => {
+            if (userData.user) {
+                await api.get(`/cnes/${userData.user.cnes}`)
+                .then(resp => {
+                    setNomeUnidade(resp.data.nome)
+                })
+                .catch(e => console.log(e))
+            }
+        }
         fetchData()
         fetchListaFuncionarios()
         fetchMaxDias()
+        fetchNomeUnidade()
     }, [userData, ano, mes])
 
     const faltamDias = () => {
@@ -78,11 +89,14 @@ const TablePact = (props) => {
             {userData.user && userData.user.nivel >= 1 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h4>Tabela de Pactuação</h4>
+                        <div>
+                            <h3>Tabela de Pactuação</h3>
+                            <h5>{nomeUnidade}</h5>
+                        </div>                        
                         <span />
                         <div>
-                            <h4>Mês de Pactuação:</h4>
-                            <h4>{mesesIdx[mes]}</h4>
+                            <h3>Mês de Pactuação:</h3>
+                            <h5>{mesesIdx[mes]}</h5>
                         </div>
                     </div>
                     <hr />
@@ -104,7 +118,8 @@ const TablePact = (props) => {
                         <tbody>
                             {listaFuncionarios ? listaFuncionarios.map(MontarTabelaLinha) : null}
                         </tbody>
-                    </Table>                    
+                    </Table>
+                    {listaFuncionarios ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                    
                 </>
             :
                 <>

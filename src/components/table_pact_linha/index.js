@@ -22,10 +22,10 @@ const TabelaLinha = (props) => {
         const fetchFechado = async () => setFechado(props.func.fechado)
         const fetchDiasPactuados = async () => setDiasPactuados(props.func.dias_pactuados)
         const fetchJustificativa = async () => {
-            if (props.func.justificativa == '') { 
-                props.func.justificativa = 'Selecione...'
-                setJustificativa(props.func.justificativa)
+            if (props.func.justificativa == '' || props.func.justificativa == null) { 
+                props.func.justificativa = 'Selecione...'                
             }
+            setJustificativa(props.func.justificativa)
         }
         const fetchDiasUteis = async () => {
             await api.get(`/pact/dias_uteis/${props.ano}/${props.mes}`)
