@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
-import { Table, Button, Spinner } from 'react-bootstrap'
+import { Table, Spinner } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_pact_linha'
@@ -13,21 +13,21 @@ const TablePact = (props) => {
     const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
-    const [showDialog, setShowDialog] = useState(false)
-    const [dialogMsg, setDialogMsg] = useState('')
+    //const [showDialog, setShowDialog] = useState(false)
+    //const [dialogMsg, setDialogMsg] = useState('')
     
     const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
-    const abrirDialog = (msg) => {
+    /* const abrirDialog = (msg) => {
         setDialogMsg(msg)
         setShowDialog(true)
     }
 
     const fecharDialog = () => {
         setShowDialog(false)
-    }
+    } */
 
     useEffect(() => {
         const fetchListaFuncionarios = async () => {
@@ -68,16 +68,7 @@ const TablePact = (props) => {
         fetchMaxDias()
         fetchNomeUnidade()
     }, [userData, ano, mes])
-
-    const faltamDias = () => {
-        const date = new Date()
-        const time = new Date(date.getTime())
-        time.setMonth(date.getMonth() + 1)
-        time.setDate(0)
-        const days = time.getDate() > date.getDate() ? time.getDate() - date.getDate() : 0
-        return days
-    }
-
+    
     const MontarTabelaLinha = (func) => {
         return (
            <TabelaLinha func={func} ano={ano} mes={mes} cnes={userData.user.cnes} maxDias={maxDias}/>

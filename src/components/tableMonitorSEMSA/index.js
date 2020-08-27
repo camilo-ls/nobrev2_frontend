@@ -3,7 +3,7 @@ import api from '../../services/api'
 import { Table, Form, Spinner } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
-import TabelaLinha from '../tableMonitorSEMSALinha'
+import MonIndividual from '../../components/table_monitor'
 
 const TablePactSemsa = (props) => {
     const { userData } = useContext(userContext)
@@ -12,8 +12,12 @@ const TablePactSemsa = (props) => {
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
-    const [disa, setDisa] = useState('NORTE')
     const [listaUnidades, setListaUnidades] = useState(undefined)
+    const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
+
+    const [disa, setDisa] = useState(undefined)
+    const [unidade, setUnidade] = useState(undefined)
+    const [funcionario, setFuncionario] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -51,24 +55,22 @@ const TablePactSemsa = (props) => {
                 })
                 .catch(e => console.log(e.message))
             }
-            
+        }
+        const fetchListaFuncionarios = async () => {                
+            if (unidade) {                
+                await api.get(`/pact/unidade/${unidade}/${ano}/${mes}`)
+                .then(resp => {
+                    if (resp) setListaFuncionarios(resp.data)                    
+                })
+                .catch(e => console.log(e))                
+            }
         }
         fetchData()
         fetchListaUnidades()
-    }, [userData, ano, mes])    
+        fetchListaFuncionarios()
+    }, [userData, ano, mes, disa, unidade, funcionario])    
 
-    const MontarTabelaLinhaPact = (unidade) => {
-        return (
-           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={true}/>
-        )
-    }
-
-    const MontarTabelaLinhaNaoPact = (unidade) => {
-        return (
-           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={false}/>
-        )
-    }
-
+    
     return (
         <div className='total-area'>
             {userData.user && userData.user.nivel >= 3 ?
@@ -82,48 +84,29 @@ const TablePactSemsa = (props) => {
                         </div>
                     </div>
                     <div className='sub-menu'>
-                        <div></div>
-                        <div></div>
                         <div>
-                            <Form.Control as='select' defaultValue={disa} onChange={e => setDisa(e.target.value)}>
-                                <option value='NORTE'>Norte</option>
-                                <option value='SUL'>Sul</option>
-                                <option value='LESTE'>Leste</option>
-                                <option value='OESTE'>Oeste</option>
-                                <option value='RURAL'>Rural</option>
+                            <Form.Control as='select' value={disa} onChange={e => setDisa(e.target.value)}>
+                                <option>Selecione...</option>
+                                <option value='NORTE'>NORTE</option>
+                                <option value='SUL'>SUL</option>
+                                <option value='LESTE'>LESTE</option>
+                                <option value='OESTE'>OESTE</option>
+                                <option value='RURAL'>RURAL</option>
                             </Form.Control>
+                        </div>
+                        <div>
+                            <Form.Control as='select' defaultValue={unidade} onChange={e => setUnidade(e.target.value)}>
+                                {listaUnidades ? listaUnidades.map(unidade => <option value={unidade.cnes}>{unidade.nome}</option>) : null}
+                            </Form.Control>
+                        </div>
+                        <div>
+                            <Form.Control as='select' defaultValue={funcionario} onChange={e => setFuncionario(e.target.value) }>
+                                <option value='null'>Toda a Unidade</option>
+                                {listaFuncionarios ? listaFuncionarios.map(func => <option value={func.cns}>{func.nome}</option>) : null}
+                            </Form.Control>    
                         </div>                        
                     </div>
-                    <div className='disa-lista-pactuados'>
-                        <div className='table_nao_pactuados'>
-                            <h3>Pactuação pendente</h3>
-                            <Table striped bordered size='sm'>                            
-                                <thead>
-                                    <tr>                                    
-                                        <th className='tabela-unidade'>Unidade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {listaUnidades ? listaUnidades.map(MontarTabelaLinhaNaoPact) : null}
-                                </tbody>
-                            </Table>
-                        </div>
-                        <span />
-                        <div className='table_pactuados'>
-                            <h3>Pactuação finalizada</h3>
-                            <Table striped bordered size='sm'>
-                                <thead>
-                                    <tr>
-                                        <th className='tabela-unidade'>Unidade</th>                                    
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {listaUnidades ? listaUnidades.map(MontarTabelaLinhaPact) : null}
-                                </tbody>
-                            </Table>
-                            {listaUnidades ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}
-                        </div>
-                    </div>                
+                    {funcionario ? <MonIndividual key={funcionario} cnes={unidade} cns={funcionario} ano={ano} mes={mes} /> : null}
                 </>
             :
                 <>

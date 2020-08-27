@@ -12,6 +12,8 @@ import './styles.css'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
+    const [cnes, setCnes] = useState('')
+    const [cns, setCns] = useState('')
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     const [showDialog, setShowDialog] = useState(false)
@@ -32,7 +34,20 @@ const TableMonitor = (props) => {
 
     useEffect(() => {
         const fetchListaProcedimentos = async () => {
-            if (props.location.state) {
+            if (props.cnes && props.cns) {
+                if (props.cnes != cnes) setCnes(props.cnes)
+                if (props.cns != cns) setCns(props.cns)
+                setMes(props.mes)
+                setAno(props.ano) 
+                await api.get(`prof/pmp/${cnes}/${cns}/${props.ano}/${props.mes}`)
+                .then(resp => {
+                    if (resp) {
+                        setListaProcedimentos(resp.data) 
+                    } 
+                })
+                .catch(e => console.log(e))
+            }
+            else if (props.location && props.location.state) {
                 await api.get(`prof/pmp/${props.location.state.cnes}/${props.location.state.cns}/${ano}/${mes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
@@ -40,13 +55,14 @@ const TableMonitor = (props) => {
                 .catch(e => console.log(e))
             }
             else {
-                if (userData.user) {      
+                if (userData.user) {
                     await api.get(`/prof/pmp/${userData.user.cnes}/${userData.user.cns}/${ano}/${mes}`)
                     .then(resp => {
                         if (resp) setListaProcedimentos(resp.data)                    
                     })
                     .catch(e => console.log(e))                
                 }
+                console.log('entrou else')
             }            
         }
         const fetchData = async () => {
@@ -55,12 +71,12 @@ const TableMonitor = (props) => {
                 setAno(resp.data.ano)
                 if (props.location.state) setMes(resp.data.mes + 1)
                 else setMes(resp.data.mes)
-                
             })
             .catch(e => console.log(e))
         }
+        console.log(props.cnes, props.cns, props.ano, props.mes)
         fetchData()
-        fetchListaProcedimentos()        
+        fetchListaProcedimentos()
     }, [userData, ano, mes])   
 
     const MontarTabelaLinha = (proc) => {
@@ -69,13 +85,14 @@ const TableMonitor = (props) => {
         )
     }
 
-    const imprimirPDF = () => {
+    const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
         const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]
         if (listaProcedimentos) {
             let nome = ''
-            if (props.location.state) nome = props.location.state.nome
-            else nome = userData.user.nome                    
+            if (props.location && props.location.state) nome = props.location.state.nome
+            else if (props.cns) await api.get(`/prof/${props.cns}`).then(resp => nome = resp.data.nome)
+            else nome = userData.user.nome
             doc.autoTable({                
                 head: [['Profissional', 'Ano', 'Mês']],
                 body: [[nome, ano, mesesIdx[mes]]]

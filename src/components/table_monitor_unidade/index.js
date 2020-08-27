@@ -9,6 +9,7 @@ import './styles.css'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
+    const [cnes, setCnes] = useState('')
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     const [maxAno, setMaxAno] = useState('')
@@ -31,7 +32,17 @@ const TableMonitor = (props) => {
 
     useEffect(() => {
         const fetchListaProcedimentos = async () => {
-            if (props.location.state) {
+            if (props.cnes) {
+                if (props.cnes != cnes) setCnes(props.cnes)
+                setMes(props.mes)
+                setAno(props.ano)
+                await api.get(`/pact/unidade_pact/${props.cnes}/${props.ano}/${props.mes}`)
+                .then(resp => {
+                    if (resp) setListaProcedimentos(resp.data)
+                })
+                .catch(e => console.log(e))
+            }
+            else if (props.location && props.location.state) {
                 await api.get(`/pact/unidade_pact/${props.location.state.cnes}/${ano}/${mes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
