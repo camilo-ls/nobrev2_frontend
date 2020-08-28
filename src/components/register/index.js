@@ -21,14 +21,15 @@ function Register() {
     const [ModalMensagem, setModalMensagem] = useState('')
 
     const buscarCpf = () => { 
-        api.get(`/prof/${userCpf}`)
+        api.get(`/prof/cpf/${userCpf}`)
         .then(resp => {            
             setUserNome(resp.data.nome)
             buscarCnes(resp.data.cnes)
             buscarCbo(resp.data.cbo)
         })
         .catch(e => {
-            openModal(e.response.data.message)
+            if (e.response.data.message) openModal(e.response.data.message)
+            else console.log(e)
         })
     }
     
@@ -38,6 +39,10 @@ function Register() {
             setUserCnes(resp.data.cnes)
             setUserCnesNome(resp.data.nome)
         })
+        .catch(e => {
+            if (e.response.data.message) openModal(e.response.data.message)
+            else console.log(e)
+        })
     }
 
     const buscarCbo = cbo => {
@@ -45,6 +50,10 @@ function Register() {
         .then(resp => {
             setUserCbo(resp.data.cbo)
             setUserCargo(resp.data.nome)
+        })
+        .catch(e => {
+            if (e.response.data.message) openModal(e.response.data.message)
+            else console.log(e)
         })
     }
 
@@ -64,7 +73,8 @@ function Register() {
            openModal(resp.data.msg)           
         })
        .catch(e => {
-           openModal(e.response.data.message)
+            if (e.response.data.message) openModal(e.response.data.message)
+            else console.log(e)
         })
     }
 

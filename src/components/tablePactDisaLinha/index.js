@@ -6,7 +6,7 @@ const TabelaMLinha = (props) => {
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
 
-    useEffect(() => {        
+    useEffect(() => {
     }, [])
 
     const abrirDialog = (msg) => {
@@ -20,7 +20,7 @@ const TabelaMLinha = (props) => {
     
     return (
         <> 
-            {props.unidade.fechou && props.pact ?
+            {props.unidade.fechou ?
             <tr key={props.unidade.nome}>
                 <td id='unidade-nome'>{props.unidade.nome}</td>
                 {props.revisao ? 
@@ -31,7 +31,7 @@ const TabelaMLinha = (props) => {
                 </td> : null}
             </tr>
             : null}
-            {!props.unidade.fechou && !props.pact ?
+            {!props.unidade.fechou ?
                 <tr key={props.unidade.nome}>
                     <td id='unidade-nome'>{props.unidade.nome}</td>
                     {props.revisao ? 

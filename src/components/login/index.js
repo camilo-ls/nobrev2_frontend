@@ -30,8 +30,8 @@ function Login() {
             history.push('/')
             return window.location.reload(false)
         })
-        .catch(async erro => {
-            if (erro) openModal(erro.response.data.message)        
+        .catch(erro => {
+           console.log(erro)      
         })        
     }
 

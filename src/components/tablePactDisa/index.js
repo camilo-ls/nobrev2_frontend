@@ -11,12 +11,14 @@ const TablePactDisa = (props) => {
     const { userData } = useContext(userContext)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
+    const [mesAnt, setMesAnt] = useState('')
     const [dia, setDia] = useState('')
     const [revisao, setRevisao] = useState(false)
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
-    const [listaUnidades, setListaUnidades] = useState(undefined)
+    const [listaUnidadesPact, setListaUnidadesPact] = useState(undefined)
+    const [listaUnidadesNPact, setListaUnidadesNPact] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -29,21 +31,18 @@ const TablePactDisa = (props) => {
         setShowDialog(false)
     }
 
-    useEffect(() => {        
+    useEffect(() => {
         const fetchData = async () => {
             await api.get('/pact/data')
             .then(async resp => {
                 setAno(resp.data.ano)
                 setMes(resp.data.mes + 1)
+                setMesAnt(resp.data.mes)              
                 setDia(resp.data.dia)
                 await api.get(`/pact/data_revisao/${ano}/${mes}`)
-                .then(resp2 => {
-                    if (resp2.data.dia == dia) {
-                        setRevisao(true)
-                        setMes(resp.data.mes)
-                    }    
-                })
-                .catch(e => console.log(e.message))     
+                .then(resp => {
+                    if (resp.data.dia == dia) setRevisao(true)
+                })                
             })
             .catch(e => console.log(e))
         }
@@ -52,7 +51,16 @@ const TablePactDisa = (props) => {
             if (props.location.state) {
                 await api.get(`/pact/faltam_pactuar/${props.location.state.cnes}/${ano}/${mes}`)
                 .then(resp => {
-                    if (resp) setListaUnidades(resp.data)
+                    if (resp) {
+                        let pactuaram = []
+                        let n_pactuaram = []
+                        for (let unidade of resp.data) {
+                            if (unidade.fechou) pactuaram.push(unidade)
+                            else n_pactuaram.push(unidade)
+                        }
+                        setListaUnidadesPact(pactuaram)
+                        setListaUnidadesNPact(n_pactuaram)
+                    }
                 })
                 .catch(e => console.log(e.message))
             }
@@ -60,7 +68,14 @@ const TablePactDisa = (props) => {
                 if (userData.user) {
                     await api.get(`/pact/faltam_pactuar/${userData.user.cnes}/${ano}/${mes}`)
                     .then(resp => {
-                        if (resp) setListaUnidades(resp.data)
+                        let pactuaram = []
+                        let n_pactuaram = []
+                        for (let unidade of resp.data) {
+                            if (unidade.fechou) pactuaram.push(unidade)
+                            else n_pactuaram.push(unidade)
+                        }
+                        setListaUnidadesPact(pactuaram)
+                        setListaUnidadesNPact(n_pactuaram)
                     })
                     .catch(e => console.log(e.message))
                 }
@@ -68,17 +83,11 @@ const TablePactDisa = (props) => {
         }
         fetchData()
         fetchListaUnidades()
-    }, [userData])    
+    }, [userData, mes])    
 
-    const MontarTabelaLinhaPact = (unidade) => {
+    const MontarTabelaLinha = (unidade) => {
         return (
-           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={true} revisao={revisao}/>
-        )
-    }
-
-    const MontarTabelaLinhaNaoPact = (unidade) => {
-        return (
-           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={false} revisao={revisao}/>
+           <TabelaLinha unidade={unidade} ano={ano} mes={mes} revisao={revisao}/>
         )
     }
 
@@ -113,11 +122,11 @@ const TablePactDisa = (props) => {
                                 <thead>
                                     <tr>                                    
                                         <th className='tabela-unidade'>Unidade</th>
-                                        {revisao ? <th className='tabela-unidade'>Opções</th> : null}
+                                        {revisao ? <th className='tabela-opcoes'>Opções</th> : null}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {listaUnidades ? listaUnidades.map(MontarTabelaLinhaNaoPact) : null}
+                                    {listaUnidadesNPact ? listaUnidadesNPact.map(MontarTabelaLinha) : null}
                                 </tbody>
                             </Table>
                         </div>
@@ -128,16 +137,16 @@ const TablePactDisa = (props) => {
                                 <thead>
                                     <tr>
                                         <th className='tabela-unidade'>Unidade</th>
-                                        {revisao ? <th className='tabela-unidade'>Opções</th> : null}                                   
+                                        {revisao ? <th className='tabela-opcoes'>Opções</th> : null}                                   
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {listaUnidades ? listaUnidades.map(MontarTabelaLinhaPact) : null}
+                                    {listaUnidadesPact ? listaUnidadesPact.map(MontarTabelaLinha) : null}
                                 </tbody>
                             </Table>                            
                         </div>                        
                     </div>
-                    {listaUnidades ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}            
+                    {listaUnidadesPact && listaUnidadesNPact ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}            
                 </>
             :
                 <>
