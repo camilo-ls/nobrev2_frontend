@@ -1,5 +1,6 @@
 import React, { useEffect, useState} from 'react'
 import { Button, Modal } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
 const TabelaMLinha = (props) => {    
     const [showDialog, setShowDialog] = useState(false)
@@ -22,11 +23,23 @@ const TabelaMLinha = (props) => {
             {props.unidade.fechou && props.pact ?
             <tr key={props.unidade.nome}>
                 <td id='unidade-nome'>{props.unidade.nome}</td>
+                {props.revisao ? 
+                <td>
+                    <Link to={{pathname: '/disa/revisao', state: {cnes: props.unidade.cnes, ano: props.ano, mes: props.mes}}}>
+                        <Button variant="outline-dark" size='sm'>Revisar</Button>
+                    </Link>
+                </td> : null}
             </tr>
             : null}
             {!props.unidade.fechou && !props.pact ?
                 <tr key={props.unidade.nome}>
                     <td id='unidade-nome'>{props.unidade.nome}</td>
+                    {props.revisao ? 
+                    <td>
+                        <Link to={{pathname: '/disa/revisao', state: {cnes: props.unidade.cnes, ano: props.ano, mes: props.mes}}}>
+                            <Button variant="outline-danger" size='sm'>Pactuar</Button>
+                        </Link>
+                    </td> : null}
                 </tr>
             : null}
             <Modal show={showDialog} onHide={fecharDialog}>

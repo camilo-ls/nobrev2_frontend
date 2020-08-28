@@ -69,6 +69,7 @@ const Home = () => {
                         <Route exact path='/semsa' component={TabelaMonSemsa} />
                         <Route exact path='/disa' component={Tabela_Disa} />
                         <Route path='/disa/monitoramento' component={Tabela_Mon_Disa} />
+                        <Route path='/disa/revisao' component={Tabela_Pact} />
                         <Route exact path='/diretor' component={Tabela_Pact} />
                         <Route path='/diretor/monitoramento' component={Tabela_Mon_Unidade} />
                         <Route path='/profissional' component={Tabela_Mon} />

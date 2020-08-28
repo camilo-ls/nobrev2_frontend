@@ -10,7 +10,9 @@ import './styles.css'
 const TablePactDisa = (props) => {
     const { userData } = useContext(userContext)
     const [ano, setAno] = useState('')
-    const [mes, setMes] = useState('')    
+    const [mes, setMes] = useState('')
+    const [dia, setDia] = useState('')
+    const [revisao, setRevisao] = useState(false)
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
@@ -30,9 +32,18 @@ const TablePactDisa = (props) => {
     useEffect(() => {        
         const fetchData = async () => {
             await api.get('/pact/data')
-            .then(resp => {
+            .then(async resp => {
                 setAno(resp.data.ano)
                 setMes(resp.data.mes + 1)
+                setDia(resp.data.dia)
+                await api.get(`/pact/data_revisao/${ano}/${mes}`)
+                .then(resp2 => {
+                    if (resp2.data.dia == dia) {
+                        setRevisao(true)
+                        setMes(resp.data.mes)
+                    }    
+                })
+                .catch(e => console.log(e.message))     
             })
             .catch(e => console.log(e))
         }
@@ -45,28 +56,29 @@ const TablePactDisa = (props) => {
                 })
                 .catch(e => console.log(e.message))
             }
-            else if (userData.user) {
-                await api.get(`/pact/faltam_pactuar/${userData.user.cnes}/${ano}/${mes}`)
-                .then(resp => {
-                    if (resp) setListaUnidades(resp.data)
-                })
-                .catch(e => console.log(e.message))
-            }
-            
+            else {
+                if (userData.user) {
+                    await api.get(`/pact/faltam_pactuar/${userData.user.cnes}/${ano}/${mes}`)
+                    .then(resp => {
+                        if (resp) setListaUnidades(resp.data)
+                    })
+                    .catch(e => console.log(e.message))
+                }
+            }            
         }
         fetchData()
         fetchListaUnidades()
-    }, [userData, ano, mes])    
+    }, [userData])    
 
     const MontarTabelaLinhaPact = (unidade) => {
         return (
-           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={true}/>
+           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={true} revisao={revisao}/>
         )
     }
 
     const MontarTabelaLinhaNaoPact = (unidade) => {
         return (
-           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={false}/>
+           <TabelaLinha unidade={unidade} ano={ano} mes={mes} pact={false} revisao={revisao}/>
         )
     }
 
@@ -75,10 +87,17 @@ const TablePactDisa = (props) => {
             {userData.user && userData.user.nivel >= 2 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h4>Monitoramento por Distrito</h4>
+                        <div>
+                            <h4><u>Monitoramento por Distrito</u></h4>
+                            {userData.user.cnes == 'NORTE' ? <h4>Distrito de Saúde Norte</h4> : null}
+                            {userData.user.cnes == 'SUL' ? <h4>Distrito de Saúde Sul</h4> : null}
+                            {userData.user.cnes == 'LESTE' ? <h4>Distrito de Saúde Leste</h4> : null}
+                            {userData.user.cnes == 'OESTE' ? <h4>Distrito de Saúde Oeste</h4> : null}
+                            {userData.user.cnes == 'RURAL' ? <h4>Distrito de Saúde Rural</h4> : null}
+                        </div>
                         <span />
                         <div>
-                            <h4>Mês de Pactuação:</h4>
+                            <h4><u>Mês de Pactuação:</u></h4>
                             <h4>{mesesIdx[mes]}</h4>
                         </div>
                     </div>
@@ -94,6 +113,7 @@ const TablePactDisa = (props) => {
                                 <thead>
                                     <tr>                                    
                                         <th className='tabela-unidade'>Unidade</th>
+                                        {revisao ? <th className='tabela-unidade'>Opções</th> : null}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -107,16 +127,17 @@ const TablePactDisa = (props) => {
                             <Table striped bordered size='sm'>
                                 <thead>
                                     <tr>
-                                        <th className='tabela-unidade'>Unidade</th>                                    
+                                        <th className='tabela-unidade'>Unidade</th>
+                                        {revisao ? <th className='tabela-unidade'>Opções</th> : null}                                   
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {listaUnidades ? listaUnidades.map(MontarTabelaLinhaPact) : null}
                                 </tbody>
-                            </Table>
-                            {listaUnidades ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}
-                        </div>
-                    </div>                
+                            </Table>                            
+                        </div>                        
+                    </div>
+                    {listaUnidades ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}            
                 </>
             :
                 <>

@@ -10,6 +10,7 @@ import './styles.css'
 const TablePact = (props) => {
     const { userData } = useContext(userContext)
     const [nomeUnidade, setNomeUnidade] = useState('')
+    const [cnes, setCnes] = useState('')
     const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
@@ -31,38 +32,77 @@ const TablePact = (props) => {
 
     useEffect(() => {
         const fetchListaFuncionarios = async () => {
-            if (userData.user) {                
-                await api.get(`/pact/unidade/${userData.user.cnes}/${ano}/${mes}`)
+            if (props.location && props.location.state) {
+                await api.get(`/pact/unidade/${props.location.state.cnes}/${props.location.state.ano}/${props.location.state.mes}`)
                 .then(resp => {
-                    if (resp) setListaFuncionarios(resp.data)                    
+                    if (resp) setListaFuncionarios(resp.data)
+                    setCnes(props.location.state.cnes)                  
                 })
-                .catch(e => console.log(e))                
+                .catch(e => console.log(e))
+            }
+            else {
+                if (userData.user) {                
+                    await api.get(`/pact/unidade/${userData.user.cnes}/${ano}/${mes}`)
+                    .then(resp => {
+                        if (resp) setListaFuncionarios(resp.data)
+                        setCnes(userData.user.cnes)                
+                    })
+                    .catch(e => console.log(e))                
+                }
             }
         }
+
         const fetchData = async () => {
-            await api.get('/pact/data')
-            .then(resp => {
-                setAno(resp.data.ano)
-                setMes(resp.data.mes + 1)
-            })
-            .catch(e => console.log(e))
-        }
-        const fetchMaxDias = async () => {
-            await api.get(`/pact/dias_mes/${ano}/${mes}`)
-            .then(resp => {
-                setMaxDias(resp.data.dias)
-            })
-            .catch(e => console.log(e))
-        }
-        const fetchNomeUnidade = async () => {
-            if (userData.user) {
-                await api.get(`/cnes/${userData.user.cnes}`)
+            if (props.location && props.location.state) {
+                setAno(props.location.state.ano)
+                setMes(props.location.state.mes)
+            }
+            else {
+                await api.get('/pact/data')
                 .then(resp => {
-                    setNomeUnidade(resp.data.nome)
+                    setAno(resp.data.ano)
+                    setMes(resp.data.mes + 1)
+                })
+            .catch(e => console.log(e))
+            }            
+        }
+
+        const fetchMaxDias = async () => {
+            if (props.location && props.location.state) {
+                await api.get(`/pact/dias_mes/${props.location.state.ano}/${props.location.state.mes}`)
+                .then(resp => {
+                    setMaxDias(resp.data.dias)
+                })
+                .catch(e => console.log(e))
+            }
+            else {
+                await api.get(`/pact/dias_mes/${ano}/${mes}`)
+                .then(resp => {
+                    setMaxDias(resp.data.dias)
                 })
                 .catch(e => console.log(e))
             }
         }
+
+        const fetchNomeUnidade = async () => {
+            if (props.location && props.location.state) {
+                await api.get(`/cnes/${props.location.state.cnes}`)
+                    .then(resp => {
+                        setNomeUnidade(resp.data.nome)
+                    })
+                    .catch(e => console.log(e))
+            }
+            else {
+                if (userData.user) {
+                    await api.get(`/cnes/${userData.user.cnes}`)
+                    .then(resp => {
+                        setNomeUnidade(resp.data.nome)
+                    })
+                    .catch(e => console.log(e))
+                }
+            }
+        }
+
         fetchData()
         fetchListaFuncionarios()
         fetchMaxDias()
@@ -71,7 +111,7 @@ const TablePact = (props) => {
     
     const MontarTabelaLinha = (func) => {
         return (
-           <TabelaLinha func={func} ano={ano} mes={mes} cnes={userData.user.cnes} maxDias={maxDias}/>
+           <TabelaLinha func={func} ano={ano} mes={mes} cnes={cnes} maxDias={maxDias}/>
         )
     }   
 

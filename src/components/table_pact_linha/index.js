@@ -102,7 +102,7 @@ const TabelaLinha = (props) => {
     return (
         <>
             <tr key={props.func.cns} className={fechado ? 'func-pactuado' : 'func-aberto'}>
-                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns, cnes: props.cnes, nome: props.func.nome}}}>{props.func.nome}</Link></td>
+                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns, cnes: props.cnes, nome: props.func.nome, ano: props.ano, mes: props.mes}}}>{props.func.nome}</Link></td>
                 <td className='tabela-cargo'>{props.func.cargo}</td>                
                 <td className='tabela-dias'>
                     <Form.Control as='select' className='day-picker' value={diasPactuados} onChange={e => setDiasPactuados(e.target.value)}>
@@ -150,7 +150,7 @@ const TabelaLinha = (props) => {
                             <option value='Folga'>Folga</option>
                             <option value='Férias'>Férias</option>
                             <option value='Curso ou evento'>Curso ou evento</option>
-                            <option onSelect={e => abrirDialog('ai')} value='Outros'>Outros</option>                           
+                            <option onSelect={e => abrirDialog('')} value='Outros'>Outros</option>                           
                         </Form.Control>
                     : null}
                     {diasPactuados > diasUteisMes ?

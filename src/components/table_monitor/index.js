@@ -48,7 +48,7 @@ const TableMonitor = (props) => {
                 .catch(e => console.log(e))
             }
             else if (props.location && props.location.state) {
-                await api.get(`prof/pmp/${props.location.state.cnes}/${props.location.state.cns}/${ano}/${mes}`)
+                await api.get(`prof/pmp/${props.location.state.cnes}/${props.location.state.cns}/${props.location.state.ano}/${props.location.state.mes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
                 })
@@ -66,13 +66,18 @@ const TableMonitor = (props) => {
             }            
         }
         const fetchData = async () => {
-            await api.get('/pact/data')
-            .then(resp => {
-                setAno(resp.data.ano)
-                if (props.location.state) setMes(resp.data.mes + 1)
-                else setMes(resp.data.mes)
-            })
-            .catch(e => console.log(e))
+            if (props.location && props.location.state) {
+                setMes(props.location.state.mes)
+                setAno(props.location.state.ano)
+            }
+            else {
+                await api.get('/pact/data')
+                .then(resp => {
+                    setAno(resp.data.ano)
+                    setMes(resp.data.mes + 1)
+                })
+                .catch(e => console.log(e))
+            }            
         }
         console.log(props.cnes, props.cns, props.ano, props.mes)
         fetchData()
