@@ -56,6 +56,7 @@ const TabelaLinha = (props) => {
         const novoFunc = {
             nome: props.func.nome,
             cns: props.func.cns,
+            mat: props.func.mat,
             cbo: props.func.cbo,
             dias_pactuados: diasPactuados,
             fechado: fechado,
@@ -77,9 +78,10 @@ const TabelaLinha = (props) => {
         const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
         var doc = new jspdf('p', 'pt', 'a4')
         const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]        
-       await api.get(`prof/pmp/${props.cnes}/${props.func.cns}/${props.ano}/${props.mes}`)
+       await api.get(`prof/pmp/${props.ano}/${props.mes}/${props.cnes}/${props.func.cns}/${props.func.mat}`)
        .then(resp => {
-            if (resp) {                
+            if (resp) {
+                console.log(resp)              
                 let nome = props.func.nome
                 doc.autoTable({                
                     head: [['Profissional', 'Ano', 'Mês']],
@@ -94,15 +96,17 @@ const TabelaLinha = (props) => {
                     font: 'helvetica',
                     fontStyle: 'normal'
                 })
-                doc.save('Meta Individual - ' + nome + '.pdf')
+                doc.save('Meta Individual - ' + props.func.mat + ' - '  + nome + '.pdf')
             }
        })
+       .catch(e => console.log(e))
     }
 
     return (
         <>
-            <tr key={props.func.cns} className={fechado ? 'func-pactuado' : 'func-aberto'}>
-                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns, cnes: props.cnes, nome: props.func.nome, ano: props.ano, mes: props.mes}}}>{props.func.nome}</Link></td>
+            <tr key={props.func.mat + props.func.cns} className={fechado ? 'func-pactuado' : 'func-aberto'}>
+                <td className='tabela-mat'>{props.func.mat}</td>
+                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns, mat: props.func.mat, cnes: props.cnes, nome: props.func.nome, ano: props.ano, mes: props.mes}}}>{props.func.nome}</Link></td>
                 <td className='tabela-cargo'>{props.func.cargo}</td>                
                 <td className='tabela-dias'>
                     <Form.Control as='select' className='day-picker' value={diasPactuados} onChange={e => setDiasPactuados(e.target.value)}>

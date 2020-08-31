@@ -31,7 +31,7 @@ function Login() {
             return window.location.reload(false)
         })
         .catch(erro => {
-           console.log(erro)      
+           if (erro.response && erro.response.data.message) openModal(erro.reponse.data.message)      
         })        
     }
 

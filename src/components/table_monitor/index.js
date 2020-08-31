@@ -14,6 +14,7 @@ const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [cnes, setCnes] = useState('')
     const [cns, setCns] = useState('')
+    const [mat, setMat] = useState('')
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     const [showDialog, setShowDialog] = useState(false)
@@ -34,12 +35,13 @@ const TableMonitor = (props) => {
 
     useEffect(() => {
         const fetchListaProcedimentos = async () => {
-            if (props.cnes && props.cns) {
+            if (props.cnes && props.cns && props.mat) {
                 if (props.cnes != cnes) setCnes(props.cnes)
                 if (props.cns != cns) setCns(props.cns)
+                if (props.mat != mat) setMat(props.mat)
                 setMes(props.mes)
                 setAno(props.ano) 
-                await api.get(`prof/pmp/${cnes}/${cns}/${props.ano}/${props.mes}`)
+                await api.get(`prof/pmp/${props.ano}/${props.mes}/${cnes}/${cns}/${mat}`)
                 .then(resp => {
                     if (resp) {
                         setListaProcedimentos(resp.data) 
@@ -48,7 +50,7 @@ const TableMonitor = (props) => {
                 .catch(e => console.log(e))
             }
             else if (props.location && props.location.state) {
-                await api.get(`prof/pmp/${props.location.state.cnes}/${props.location.state.cns}/${props.location.state.ano}/${props.location.state.mes}`)
+                await api.get(`prof/pmp/${props.location.state.ano}/${props.location.state.mes}/${props.location.state.cnes}/${props.location.state.cns}/${props.location.state.mat}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
                 })
@@ -56,7 +58,7 @@ const TableMonitor = (props) => {
             }
             else {
                 if (userData.user) {
-                    await api.get(`/prof/pmp/${userData.user.cnes}/${userData.user.cns}/${ano}/${mes}`)
+                    await api.get(`/prof/pmp/${ano}/${mes}/${userData.user.cnes}/${userData.user.cns}/${userData.user.mat}`)
                     .then(resp => {
                         if (resp) setListaProcedimentos(resp.data)                    
                     })
@@ -79,7 +81,7 @@ const TableMonitor = (props) => {
                 .catch(e => console.log(e))
             }            
         }
-        console.log(props.cnes, props.cns, props.ano, props.mes)
+        console.log(props.cnes, props.cns, props.mat, props.ano, props.mes)
         fetchData()
         fetchListaProcedimentos()
     }, [userData, ano, mes])   
@@ -96,7 +98,7 @@ const TableMonitor = (props) => {
         if (listaProcedimentos) {
             let nome = ''
             if (props.location && props.location.state) nome = props.location.state.nome
-            else if (props.cns) await api.get(`/prof/${props.cns}`).then(resp => nome = resp.data.nome)
+            else if (props.cns && props.mat) await api.get(`/prof/${props.cns}/${props.mat}`).then(resp => nome = resp.data.nome)
             else nome = userData.user.nome
             doc.autoTable({                
                 head: [['Profissional', 'Ano', 'Mês']],
@@ -144,7 +146,8 @@ const TableMonitor = (props) => {
                             {listaProcedimentos ? listaProcedimentos.map(MontarTabelaLinha) : null}
                         </tbody>
                     </Table>
-                    {listaProcedimentos ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                   
+                    {listaProcedimentos ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}
+                    {listaProcedimentos && listaProcedimentos.length == 0 ? <div className='waiting-load'> <span /> <h2>Você não possui procedimentos.</h2></div> : null}                    
                 </>
             :
                 <>

@@ -22,10 +22,12 @@ function Register() {
 
     const buscarCpf = () => { 
         api.get(`/prof/cpf/${userCpf}`)
-        .then(resp => {            
-            setUserNome(resp.data.nome)
-            buscarCnes(resp.data.cnes)
-            buscarCbo(resp.data.cbo)
+        .then(resp => {
+            if (resp) {  
+                setUserNome(resp.data.nome)
+                buscarCnes(resp.data.cnes)
+                buscarCbo(resp.data.cbo)
+            }
         })
         .catch(e => {
             if (e.response.data.message) openModal(e.response.data.message)
@@ -97,7 +99,7 @@ function Register() {
                         <Form.Control type='number' placeholder='Preencha com o seu CPF'
                         onChange={e => setUserCpf(e.target.value)} className='form-cpf' required/>
                         <Button variant="warning"
-                        onClick={buscarCpf}> Buscar CPF </Button>            
+                        onClick={buscarCpf}>Buscar CPF</Button>            
                     </Form.Group>
                     <hr />              
                 <Form.Group controlId='formBasicNome'>

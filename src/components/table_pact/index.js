@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
-import { Table, Spinner } from 'react-bootstrap'
+import { Table, Spinner, Form } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_pact_linha'
@@ -11,12 +11,14 @@ const TablePact = (props) => {
     const { userData } = useContext(userContext)
     const [nomeUnidade, setNomeUnidade] = useState('')
     const [cnes, setCnes] = useState('')
+    const [primeiraVez, setPrimeiraVez] = useState(true)
     const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     //const [showDialog, setShowDialog] = useState(false)
     //const [dialogMsg, setDialogMsg] = useState('')
     
+    const [listaCnes, setListaCnes] = useState(undefined)
     const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
@@ -33,19 +35,21 @@ const TablePact = (props) => {
     useEffect(() => {
         const fetchListaFuncionarios = async () => {
             if (props.location && props.location.state) {
-                await api.get(`/pact/unidade/${props.location.state.cnes}/${props.location.state.ano}/${props.location.state.mes}`)
+                await api.get(`/pact/unidade/${props.location.state.ano}/${props.location.state.mes}/${props.location.state.cnes}`)
                 .then(resp => {
                     if (resp) setListaFuncionarios(resp.data)
-                    setCnes(props.location.state.cnes)                  
+                    setCnes(props.location.state.cnes)
+                    setPrimeiraVez(false)               
                 })
                 .catch(e => console.log(e))
             }
             else {
                 if (userData.user) {                
-                    await api.get(`/pact/unidade/${userData.user.cnes}/${ano}/${mes}`)
+                    await api.get(`/pact/unidade/${ano}/${mes}/${userData.user.cnes}`)
                     .then(resp => {
                         if (resp) setListaFuncionarios(resp.data)
-                        setCnes(userData.user.cnes)                
+                        setCnes(userData.user.cnes)
+                        setPrimeiraVez(false)              
                     })
                     .catch(e => console.log(e))                
                 }
@@ -84,6 +88,28 @@ const TablePact = (props) => {
             }
         }
 
+        const fetchCnes = async () => {
+            if (primeiraVez) {
+                if (props.location && props.location.state) setCnes(props.location.state.cnes) 
+                else {
+                    if (userData.user) {                
+                        setCnes(userData.user.cnes)             
+                    }
+                }
+            }
+        }
+
+        const fetchFilhas = async () => {
+            await api.get(`/pact/responsabilidade/${cnes}`)
+            .then(lista => {
+                if (lista) {
+                    console.log(lista.data)
+                    setListaCnes(lista.data)
+                }
+            })
+            .catch(e => console.log(e))
+        }
+
         const fetchNomeUnidade = async () => {
             if (props.location && props.location.state) {
                 await api.get(`/cnes/${props.location.state.cnes}`)
@@ -104,25 +130,33 @@ const TablePact = (props) => {
         }
 
         fetchData()
+        fetchCnes()
         fetchListaFuncionarios()
+        fetchFilhas()
         fetchMaxDias()
         fetchNomeUnidade()
-    }, [userData, ano, mes])
+    }, [userData])
     
     const MontarTabelaLinha = (func) => {
         return (
            <TabelaLinha func={func} ano={ano} mes={mes} cnes={cnes} maxDias={maxDias}/>
         )
-    }   
+    }
+
+    const MudarCnes = (cnes) => {
+        
+    }
 
     return (
         <div className='total-area'>
-            {userData.user && userData.user.nivel >= 1 ?
+            {userData.user && userData.user.nivel >= 1?
                 <>
                     <div className='cabeçalho-tabela'>
                         <div>
                             <h3>Tabela de Pactuação</h3>
-                            <h5>{nomeUnidade}</h5>
+                            <Form.Control as='select' size='lg' type='text' defaultValue={nomeUnidade} onChange={e => setCnes(e.target.value)}>
+                                {listaCnes ? listaCnes.map(unidade => <option key={unidade.cnes} value={unidade.cnes}>{unidade.nome}</option>) : <option>TesteO</option>}
+                            </Form.Control>
                         </div>                        
                         <span />
                         <div>
@@ -139,6 +173,7 @@ const TablePact = (props) => {
                     <Table>
                         <thead>
                             <tr>
+                                <th className='tabela-mat'>Mat.</th>
                                 <th className='tabela-nome'>Nome</th>
                                 <th className='tabela-cargo'>Cargo</th>
                                 <th className='tabela-dias'>Dias Pactuados</th>

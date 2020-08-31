@@ -3,8 +3,12 @@
     margin: auto;
 }
 
+.tabela-mat {
+    width: 8%;
+}
+
 .tabela-nome {
-    width: 30%;
+    width: 27%;
 }
 
 .tabela-cargo {
@@ -12,19 +16,19 @@
 }
 
 .tabela-dias {
-    width: 14%;
+    width: 12%;
 }
 
 .tabela-justificativa {
-    width: 20%;
-}
-
-.tabela-opcoes {
     width: 16%;
 }
 
+.tabela-opcoes {
+    width: 17%;
+}
+
 .botao-pact {
-    margin: 1px;
+    margin-right: 2px;
 }
 
 .sub-menu {

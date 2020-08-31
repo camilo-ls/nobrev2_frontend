@@ -36,14 +36,14 @@ const TableMonitor = (props) => {
                 if (props.cnes != cnes) setCnes(props.cnes)
                 setMes(props.mes)
                 setAno(props.ano)
-                await api.get(`/pact/unidade_pact/${props.cnes}/${props.ano}/${props.mes}`)
+                await api.get(`/pact/unidade_pact/${props.ano}/${props.mes}/${props.cnes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
                 })
                 .catch(e => console.log(e))
             }
             else if (props.location && props.location.state) {
-                await api.get(`/pact/unidade_pact/${props.location.state.cnes}/${ano}/${mes}`)
+                await api.get(`/pact/unidade_pact/${ano}/${mes}/${props.location.state.cnes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
                 })
@@ -52,7 +52,7 @@ const TableMonitor = (props) => {
             else {
                 if (userData.user) {
                     console.log(userData)          
-                    await api.get(`/pact/unidade_pact/${userData.user.cnes}/${ano}/${mes}`)
+                    await api.get(`/pact/unidade_pact/${ano}/${mes}/${userData.user.cnes}`)
                     .then(resp => {
                         if (resp) setListaProcedimentos(resp.data)                    
                     })
