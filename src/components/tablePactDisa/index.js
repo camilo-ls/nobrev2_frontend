@@ -49,7 +49,7 @@ const TablePactDisa = (props) => {
 
         const fetchListaUnidades = async () => {
             if (props.location.state) {
-                await api.get(`/pact/faltam_pactuar/${props.location.state.cnes}/${ano}/${mes}`)
+                await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${props.location.state.cnes}`)
                 .then(resp => {
                     if (resp) {
                         let pactuaram = []
@@ -66,7 +66,7 @@ const TablePactDisa = (props) => {
             }
             else {
                 if (userData.user) {
-                    await api.get(`/pact/faltam_pactuar/${userData.user.cnes}/${ano}/${mes}`)
+                    await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${userData.user.cnes}`)
                     .then(resp => {
                         let pactuaram = []
                         let n_pactuaram = []

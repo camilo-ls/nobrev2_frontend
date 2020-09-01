@@ -10,6 +10,7 @@ import './styles.css'
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [cnes, setCnes] = useState('')
+    const [nomeUnidade, setNomeUnidade] = useState('')
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     const [maxAno, setMaxAno] = useState('')
@@ -71,8 +72,34 @@ const TableMonitor = (props) => {
             })
             .catch(e => console.log(e))
         }
+        const fetchNomeUnidade = async () => {
+            if (props.cnes) {
+                await api.get(`/cnes/${props.cnes}`)
+                    .then(resp => {
+                        setNomeUnidade(resp.data.nome)
+                    })
+                    .catch(e => console.log(e))
+            }
+            else if (props.location && props.location.state) {
+                await api.get(`/cnes/${props.location.state.cnes}`)
+                    .then(resp => {
+                        setNomeUnidade(resp.data.nome)
+                    })
+                    .catch(e => console.log(e))
+            }
+            else {
+                if (userData.user) {
+                    await api.get(`/cnes/${userData.user.cnes}`)
+                    .then(resp => {
+                        setNomeUnidade(resp.data.nome)
+                    })
+                    .catch(e => console.log(e))
+                }
+            }
+        }
         if (mes == '' || ano == '') fetchData()
-        fetchListaProcedimentos()        
+        fetchListaProcedimentos()
+        fetchNomeUnidade()        
     }, [userData, ano, mes])   
 
     const MontarTabelaLinha = (proc) => {
@@ -86,7 +113,10 @@ const TableMonitor = (props) => {
             {userData.user && userData.user.nivel >= 1 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h4>Tabela de Metas</h4>
+                        <div>
+                            <h3>Tabela de Metas</h3>
+                            <h5>{nomeUnidade}</h5>
+                        </div>                       
                         <span />
                         <div>
                             <span>MÊS DE PACTUAÇÃO:</span>

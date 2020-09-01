@@ -13,8 +13,9 @@ import './styles.css'
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [cnes, setCnes] = useState('')
-    const [cns, setCns] = useState('')
-    const [mat, setMat] = useState('')
+    const [cns, setCns] = useState(undefined)
+    const [nome, setNome] = useState('')
+    const [mat, setMat] = useState(undefined)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     const [showDialog, setShowDialog] = useState(false)
@@ -44,7 +45,7 @@ const TableMonitor = (props) => {
                 await api.get(`prof/pmp/${props.ano}/${props.mes}/${cnes}/${cns}/${mat}`)
                 .then(resp => {
                     if (resp) {
-                        setListaProcedimentos(resp.data) 
+                        setListaProcedimentos(resp.data)                        
                     } 
                 })
                 .catch(e => console.log(e))
@@ -64,7 +65,6 @@ const TableMonitor = (props) => {
                     })
                     .catch(e => console.log(e))                
                 }
-                console.log('entrou else')
             }            
         }
         const fetchData = async () => {
@@ -81,9 +81,18 @@ const TableMonitor = (props) => {
                 .catch(e => console.log(e))
             }            
         }
-        console.log(props.cnes, props.cns, props.mat, props.ano, props.mes)
+        const fetchNome = async () => {
+            if (cns && mat) {
+                await api.get(`/prof/id/${cns}/${mat}`)
+                .then(resp => {
+                setNome(resp.data.nome)
+                })
+                .catch(e => console.log(e))
+            }            
+        }
         fetchData()
         fetchListaProcedimentos()
+        fetchNome()
     }, [userData, ano, mes])   
 
     const MontarTabelaLinha = (proc) => {
@@ -122,7 +131,10 @@ const TableMonitor = (props) => {
             {userData.user && userData.user.nivel >= 0 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h4>Tabela de Metas</h4>
+                        <div>
+                            <h3>Tabela de Metas</h3>
+                            <h5>{nome}</h5>
+                        </div>
                         <span />
                         <div>
                             <span>Mês de Pactuação:</span>

@@ -11,14 +11,12 @@ const TablePact = (props) => {
     const { userData } = useContext(userContext)
     const [nomeUnidade, setNomeUnidade] = useState('')
     const [cnes, setCnes] = useState('')
-    const [primeiraVez, setPrimeiraVez] = useState(true)
     const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     //const [showDialog, setShowDialog] = useState(false)
     //const [dialogMsg, setDialogMsg] = useState('')
     
-    const [listaCnes, setListaCnes] = useState(undefined)
     const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
@@ -34,12 +32,19 @@ const TablePact = (props) => {
 
     useEffect(() => {
         const fetchListaFuncionarios = async () => {
-            if (props.location && props.location.state) {
+            if (props.cnes) {
+                await api.get(`/pact/unidade/${ano}/${mes}/${props.cnes}`)
+                .then(resp => {
+                    if (resp) setListaFuncionarios(resp.data)
+                    setCnes(props.cnes)
+                })
+                .catch(e => console.log(e))
+            }
+            else if (props.location && props.location.state) {
                 await api.get(`/pact/unidade/${props.location.state.ano}/${props.location.state.mes}/${props.location.state.cnes}`)
                 .then(resp => {
                     if (resp) setListaFuncionarios(resp.data)
                     setCnes(props.location.state.cnes)
-                    setPrimeiraVez(false)               
                 })
                 .catch(e => console.log(e))
             }
@@ -49,7 +54,6 @@ const TablePact = (props) => {
                     .then(resp => {
                         if (resp) setListaFuncionarios(resp.data)
                         setCnes(userData.user.cnes)
-                        setPrimeiraVez(false)              
                     })
                     .catch(e => console.log(e))                
                 }
@@ -89,25 +93,13 @@ const TablePact = (props) => {
         }
 
         const fetchCnes = async () => {
-            if (primeiraVez) {
-                if (props.location && props.location.state) setCnes(props.location.state.cnes) 
-                else {
-                    if (userData.user) {                
-                        setCnes(userData.user.cnes)             
-                    }
+            if (props.cnes) setCnes(props.cnes)
+            else if (props.location && props.location.state) setCnes(props.location.state.cnes)
+            else {
+                if (userData.user) {                
+                    setCnes(userData.user.cnes)             
                 }
             }
-        }
-
-        const fetchFilhas = async () => {
-            await api.get(`/pact/responsabilidade/${cnes}`)
-            .then(lista => {
-                if (lista) {
-                    console.log(lista.data)
-                    setListaCnes(lista.data)
-                }
-            })
-            .catch(e => console.log(e))
         }
 
         const fetchNomeUnidade = async () => {
@@ -131,20 +123,16 @@ const TablePact = (props) => {
 
         fetchData()
         fetchCnes()
-        fetchListaFuncionarios()
-        fetchFilhas()
+        fetchListaFuncionarios()        
         fetchMaxDias()
         fetchNomeUnidade()
-    }, [userData])
+        console.log(cnes)
+    }, [userData, ano, mes])
     
     const MontarTabelaLinha = (func) => {
         return (
            <TabelaLinha func={func} ano={ano} mes={mes} cnes={cnes} maxDias={maxDias}/>
         )
-    }
-
-    const MudarCnes = (cnes) => {
-        
     }
 
     return (
@@ -154,10 +142,8 @@ const TablePact = (props) => {
                     <div className='cabeçalho-tabela'>
                         <div>
                             <h3>Tabela de Pactuação</h3>
-                            <Form.Control as='select' size='lg' type='text' defaultValue={nomeUnidade} onChange={e => setCnes(e.target.value)}>
-                                {listaCnes ? listaCnes.map(unidade => <option key={unidade.cnes} value={unidade.cnes}>{unidade.nome}</option>) : <option>TesteO</option>}
-                            </Form.Control>
-                        </div>                        
+                            <h5>{nomeUnidade}</h5>                        
+                        </div>
                         <span />
                         <div>
                             <h3>Mês de Pactuação:</h3>
@@ -185,7 +171,8 @@ const TablePact = (props) => {
                             {listaFuncionarios ? listaFuncionarios.map(MontarTabelaLinha) : null}
                         </tbody>
                     </Table>
-                    {listaFuncionarios ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                    
+                    {listaFuncionarios ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}
+                    {listaFuncionarios && listaFuncionarios.length == 0 ? <div className='waiting-load'><span /><h2>CNES sem funcionários.</h2></div> : null}                   
                 </>
             :
                 <>
