@@ -40,13 +40,12 @@ const TableMonitor = (props) => {
                 if (props.cnes != cnes) setCnes(props.cnes)
                 if (props.cns != cns) setCns(props.cns)
                 if (props.mat != mat) setMat(props.mat)
-                setMes(props.mes)
-                setAno(props.ano) 
-                await api.get(`prof/pmp/${props.ano}/${props.mes}/${cnes}/${cns}/${mat}`)
+                if (props.mes) setMes(props.mes)
+                if (props.ano) setAno(props.ano) 
+                await api.get(`prof/pmp/${ano}/${mes}/${cnes}/${cns}/${mat}`)
                 .then(resp => {
-                    if (resp) {
-                        setListaProcedimentos(resp.data)                        
-                    } 
+                    if (resp) setListaProcedimentos(resp.data)
+                    fetchNome()
                 })
                 .catch(e => console.log(e))
             }
@@ -54,6 +53,8 @@ const TableMonitor = (props) => {
                 await api.get(`prof/pmp/${props.location.state.ano}/${props.location.state.mes}/${props.location.state.cnes}/${props.location.state.cns}/${props.location.state.mat}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
+                    setMat(props.location.state.mat)
+                    fetchNome()
                 })
                 .catch(e => console.log(e))
             }
@@ -61,7 +62,9 @@ const TableMonitor = (props) => {
                 if (userData.user) {
                     await api.get(`/prof/pmp/${ano}/${mes}/${userData.user.cnes}/${userData.user.cns}/${userData.user.mat}`)
                     .then(resp => {
-                        if (resp) setListaProcedimentos(resp.data)                    
+                        if (resp) setListaProcedimentos(resp.data)
+                        setMat(userData.user.mat)
+                        fetchNome()                   
                     })
                     .catch(e => console.log(e))                
                 }
@@ -92,7 +95,6 @@ const TableMonitor = (props) => {
         }
         fetchData()
         fetchListaProcedimentos()
-        fetchNome()
     }, [userData, ano, mes])   
 
     const MontarTabelaLinha = (proc) => {

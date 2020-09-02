@@ -18,6 +18,7 @@ import Tabela_Disa from '../../components/tablePactDisa'
 import Tabela_Mon_Disa from '../../components/tableMonitorDisa'
 import TabelaMonSemsa from '../../components/tableMonitorSEMSA'
 import Diretor_EscolherUnidade from '../../components/Diretor_EscolherUnidade'
+import Profissional_EscolherMatricula from '../../components/Profissional_EscolherMatricula'
 
 const Home = () => {
     const [userData, setUserData] = useState({
@@ -72,9 +73,8 @@ const Home = () => {
                         <Route path='/disa/monitoramento' component={Tabela_Mon_Disa} />
                         <Route path='/disa/revisao' component={Tabela_Pact} />
                         <Route exact path='/diretor' component={Diretor_EscolherUnidade} />
-                        <Route path='/diretor/pactuacao' component={Tabela_Pact} />
                         <Route path='/diretor/monitoramento' component={Tabela_Mon_Unidade} />
-                        <Route path='/profissional' component={Tabela_Mon} />
+                        <Route path='/profissional' component={Profissional_EscolherMatricula} />
                     </Switch>
                 </userContext.Provider>
             </BrowserRouter>            

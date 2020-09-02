@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
 import { Spinner, Form } from 'react-bootstrap'
 import userContext from '../../context/userContext'
-import TablePact from '../../components/table_pact'
+import TableMon from '../../components/table_monitor'
 
-const EscolherUnidade = (props) => {
+const EscolherMatricula = (props) => {
     const { userData } = useContext(userContext)
     const [mat, setMat] = useState('')
     const [ano, setAno] = useState('')
@@ -41,23 +41,22 @@ const EscolherUnidade = (props) => {
             }            
         }
 
-        const fetchFilhas = async () => {
+        const fetchMatriculas = async () => {
             if (props.location && props.location.state) {
-                await api.get(`/pact/responsabilidade/${props.location.state.cnes}`)
+                await api.get(`/prof/cns/${props.location.state.cns}`)
                 .then(lista => {
                     if (lista) {
-                        setListaCnes(lista.data)
+                        setListaMat(lista.data)
                     }
                 })
                 .catch(e => console.log(e))
             }
             else {
                 if (userData.user) {
-                    await api.get(`/pact/responsabilidade/${userData.user.cnes}`)
+                    await api.get(`/prof/cns/${userData.user.cns}`)
                     .then(lista => {
                     if (lista) {
-                        console.log(lista.data)
-                        setListaCnes(lista.data)
+                        setListaMat(lista.data)
                     }
                 })
                 .catch(e => console.log(e))
@@ -66,22 +65,23 @@ const EscolherUnidade = (props) => {
         }
 
         fetchData()
-        fetchFilhas()        
-    }, [userData, cnes])
+        fetchMatriculas()
+        console.log(listaMat)        
+    }, [userData, mat])
         
     return (
         <div className='total-area'>
-            {userData.user && userData.user.nivel >= 1?
+            {userData.user && userData.user.nivel >= 0?
                 <>
-                    {listaCnes ? 
+                    {listaMat ? 
                     <>
-                        <div className='escolher-unidade'>
-                            <Form.Control as='select' onChange={e => setCnes(e.target.value)}>
-                                {listaCnes.map(unidade => <option value={unidade.cnes}>{unidade.nome}</option>)}
+                        <div className='escolher-matricula'>
+                            <Form.Control as='select' onChange={e => setMat(e.target.value)}>
+                                {listaMat.map(servidor => <option value={servidor.mat}>{servidor.mat}</option>)}
                             </Form.Control>
                         </div>
                         <hr />
-                        <TablePact key={cnes} cnes={cnes} />
+                        <TableMon key={mat} cnes={userData.user.cnes} cns={userData.user.cns} mat={mat} />
                     </>
                     :
                     <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                    
@@ -96,4 +96,4 @@ const EscolherUnidade = (props) => {
     )
 }
 
-export default EscolherUnidade
+export default EscolherMatricula
