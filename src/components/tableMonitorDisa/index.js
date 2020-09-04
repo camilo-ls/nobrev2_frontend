@@ -32,7 +32,7 @@ const TableMonitor = (props) => {
     useEffect(() => {
         const fetchListaProcedimentos = async () => {
             if (props.location.state) {
-                await api.get(`/pact/disa_pact/${props.location.state.cnes}/${ano}/${mes}`)
+                await api.get(`/pact/disa_pact/${ano}/${mes}/${props.location.state.cnes}`)
                 .then(resp => {
                     if (resp) setListaProcedimentos(resp.data)
                 })
@@ -41,7 +41,7 @@ const TableMonitor = (props) => {
             else {
                 if (userData.user) {
                     console.log(userData)          
-                    await api.get(`/pact/disa_pact/${userData.user.cnes}/${ano}/${mes}`)
+                    await api.get(`/pact/disa_pact/${ano}/${mes}/${userData.user.cnes}`)
                     .then(resp => {
                         if (resp) setListaProcedimentos(resp.data)                    
                     })
