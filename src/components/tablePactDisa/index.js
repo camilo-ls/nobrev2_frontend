@@ -36,7 +36,8 @@ const TablePactDisa = (props) => {
             await api.get('/pact/data')
             .then(async resp => {
                 setAno(resp.data.ano)
-                setMes(resp.data.mes + 1)
+                if (revisao) setMes(resp.data.mes)
+                else setMes(resp.data.mes + 1)
                 setMesAnt(resp.data.mes)              
                 setDia(resp.data.dia)
                 await api.get(`/pact/data_revisao/${ano}/${mes}`)
@@ -83,7 +84,7 @@ const TablePactDisa = (props) => {
         }
         fetchData()
         fetchListaUnidades()
-    }, [userData, mes])    
+    }, [userData, ano, mes, revisao])    
 
     const MontarTabelaLinha = (unidade) => {
         return (

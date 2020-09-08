@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import { Table, Form, Spinner } from 'react-bootstrap'
+import { Table, Form, Spinner, Button } from 'react-bootstrap'
 import userContext from '../../context/userContext'
+import jspdf from 'jspdf'
+import 'jspdf-autotable'
 
 import TabelaLinha from '../table_monitor_linha'
 
@@ -9,7 +11,7 @@ import './styles.css'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
-    const [cnes, setCnes] = useState('')
+    const [cnes, setCnes] = useState(undefined)
     const [nomeUnidade, setNomeUnidade] = useState('')
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
@@ -19,6 +21,8 @@ const TableMonitor = (props) => {
     const [dialogMsg, setDialogMsg] = useState('')
     
     const [listaProcedimentos, setListaProcedimentos] = useState(undefined)
+    const [listaAnos, setListaAnos] = useState(undefined)
+    const [listaMeses, setListaMeses] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -32,35 +36,28 @@ const TableMonitor = (props) => {
     }
 
     useEffect(() => {
-        const fetchListaProcedimentos = async () => {
-            if (props.cnes) {
-                if (props.cnes != cnes) setCnes(props.cnes)
-                setMes(props.mes)
-                setAno(props.ano)
-                await api.get(`/pact/unidade_pact/${props.ano}/${props.mes}/${props.cnes}`)
-                .then(resp => {
-                    if (resp) setListaProcedimentos(resp.data)
-                })
-                .catch(e => console.log(e))
+        const fetchDados = async () => {
+            if (props.cnes) {               
+                setCnes(props.cnes)
             }
-            else if (props.location && props.location.state) {
-                await api.get(`/pact/unidade_pact/${ano}/${mes}/${props.location.state.cnes}`)
-                .then(resp => {
-                    if (resp) setListaProcedimentos(resp.data)
-                })
-                .catch(e => console.log(e))
+            else if (props.location && props.location.state) {                
+                setCnes(props.location.state.cnes)
             }
             else {
                 if (userData.user) {
-                    console.log(userData)          
-                    await api.get(`/pact/unidade_pact/${ano}/${mes}/${userData.user.cnes}`)
-                    .then(resp => {
-                        if (resp) setListaProcedimentos(resp.data)                    
-                    })
-                    .catch(e => console.log(e))                
+                    setCnes(userData.user.cnes)
                 }
-            }            
+            }
         }
+
+        const fetchListaProcedimentos = async () => {
+            await api.get(`/pact/unidade_pact/${ano}/${mes}/${cnes}`)
+                .then(resp => {
+                    if (resp) setListaProcedimentos(resp.data)
+                })
+                .catch(e => console.log(e))
+        }
+
         const fetchData = async () => {
             await api.get('/pact/data')
             .then(resp => {
@@ -97,15 +94,57 @@ const TableMonitor = (props) => {
                 }
             }
         }
+        const fetchAnos = async () => {
+            if (cnes) {
+                await api.get(`/pact/anos/${cnes}`)
+                .then(resp => {
+                    setListaAnos(resp.data)
+                })
+                .catch(e => console.log(e))
+            }
+        }
+        const fetchMeses = async () => {
+            if (cnes && ano) {
+                await api.get(`/pact/meses/${ano}/${cnes}`)
+                .then(resp => {
+                    setListaMeses(resp.data)
+                })
+                .catch(e => console.log(e))
+            }
+        }
         if (mes == '' || ano == '') fetchData()
+        fetchDados()
+        fetchAnos()
+        fetchMeses()
         fetchListaProcedimentos()
-        fetchNomeUnidade()        
-    }, [userData, ano, mes])   
+        fetchNomeUnidade()
+    }, [userData, ano, mes, cnes, listaProcedimentos])   
 
     const MontarTabelaLinha = (proc) => {
         return (
            <TabelaLinha proc={proc} ano={ano} mes={mes} />
         )
+    }
+
+    const imprimirPDF = async () => {
+        var doc = new jspdf('p', 'pt', 'a4')
+        const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]
+        if (listaProcedimentos) {            
+            doc.autoTable({                
+                head: [['Unidade de Saúde', 'Ano', 'Mês']],
+                body: [[nomeUnidade, ano, mesesIdx[mes]]]
+            })
+            doc.autoTable({
+                head: cabeçalho,
+                body: listaProcedimentos.map(proc => {
+                    return [proc.cod, proc.nome, proc.quantidade]
+                }),
+                margin: { top: 100 },
+                font: 'helvetica',
+                fontStyle: 'normal'
+            })
+            doc.save('Meta da Unidade - ' + nomeUnidade + '.pdf')
+        }
     }
 
     return (
@@ -119,30 +158,21 @@ const TableMonitor = (props) => {
                         </div>                       
                         <span />
                         <div>
-                            <span>MÊS DE PACTUAÇÃO:</span>
+                            <h3>Mês de Monitoramento:</h3>
                             <Form className='mes-select'>
                                 <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => setMes(e.target.value)}>
-                                    {maxMes >= 1 ? <option value='1'>Janeiro</option> : null}
-                                    {maxMes >= 2 ? <option value='2'>Fevereiro</option> : null}
-                                    {maxMes >= 3 ? <option value='3'>Março</option> : null}
-                                    {maxMes >= 4 ? <option value='4'>Abril</option> : null}
-                                    {maxMes >= 5 ? <option value='5'>Maio</option> : null}
-                                    {maxMes >= 6 ? <option value='6'>Junho</option> : null}
-                                    {maxMes >= 7 ? <option value='7'>Julho</option> : null}
-                                    {maxMes >= 8 ? <option value='8'>Agosto</option> : null}
-                                    {maxMes >= 9 ? <option value='9'>Setembro</option> : null}
-                                    {maxMes >= 10 ? <option value='10'>Outubro</option> : null}
-                                    {maxMes >= 11 ? <option value='11'>Novembro</option> : null}
-                                    {maxMes >= 12 ? <option value='12'>Dezembro</option> : null}
+                                    {listaMeses ? listaMeses.map(retorno => <option value={retorno.mes}>{mesesIdx[retorno.mes]}</option>) : null}
                                 </Form.Control>
-                                <Form.Control as='select' size='sm' custom>
-                                    <option value='2020'>2020</option>
+                                <Form.Control as='select' size='sm' custom onChange={e => setAno(e.target.value)}>
+                                    {listaAnos ? listaAnos.map(retorno => <option value={retorno.ano}>{retorno.ano}</option>) : null}
                                 </Form.Control>
                             </Form>
                         </div>
                     </div>
                     <div className='sub-menu'>
-                        
+                        <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
+                        <div />
+                        <div />
                     </div>
                     <Table striped bordered hover>
                         <thead>

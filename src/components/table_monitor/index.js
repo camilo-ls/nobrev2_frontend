@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import { Table, Button, Spinner } from 'react-bootstrap'
+import { Table, Button, Spinner, Form } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_monitor_linha'
@@ -20,7 +20,9 @@ const TableMonitor = (props) => {
     const [mes, setMes] = useState('')
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
-    
+
+    const [listaAnos, setListaAnos] = useState(undefined)
+    const [listaMeses, setListaMeses] = useState(undefined)
     const [listaProcedimentos, setListaProcedimentos] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
@@ -40,13 +42,14 @@ const TableMonitor = (props) => {
                 if (props.cnes != cnes) setCnes(props.cnes)
                 if (props.cns != cns) setCns(props.cns)
                 if (props.mat != mat) setMat(props.mat)
-                if (props.mes) setMes(props.mes)
-                if (props.ano) setAno(props.ano)
+                
             }
             else if (props.location && props.location.state) {
                 if (props.location.state.cnes != cnes) setCnes(props.location.state.cnes)
                 if (props.location.state.cns != cns) setCns(props.location.state.cns)
-                if (props.location.state.mat != mat) setMat(props.location.state.mat)   
+                if (props.location.state.mat != mat) setMat(props.location.state.mat)
+                if (props.location.state.ano != ano) setAno(props.location.state.ano)
+                if (props.location.state.mes != mes) setMes(props.location.state.mes)  
             }
             else {
                 if (userData.user) {
@@ -67,19 +70,16 @@ const TableMonitor = (props) => {
         }
 
         const fetchData = async () => {
-            if (props.location && props.location.state) {
-                setMes(props.location.state.mes)
-                setAno(props.location.state.ano)
+            if (mes == '' || ano == '') {                
+                    await api.get('/pact/data')
+                    .then(resp => {
+                        setAno(resp.data.ano)
+                        setMes(resp.data.mes + 1)
+                    })
+                    .catch(e => console.log(e))
             }
-            else {
-                await api.get('/pact/data')
-                .then(resp => {
-                    setAno(resp.data.ano)
-                    setMes(resp.data.mes + 1)
-                })
-                .catch(e => console.log(e))
-            }            
         }
+
         const fetchNome = async () => {
             if (cns && mat) {
                 await api.get(`/prof/id/${cns}/${mat}`)
@@ -89,8 +89,24 @@ const TableMonitor = (props) => {
                 .catch(e => console.log(e))
             }            
         }
-        fetchData()
+        const fetchAnos = async () => {
+            if (cns && mat) {
+                await api.get(`/pact/profissional/anos/${cns}/${mat}`)
+                .then(resp => setListaAnos(resp.data))
+                .catch(e => console.log(e))
+            }
+        }
+        const fetchMeses = async () => {
+            if (cns && mat && ano) {
+                await api.get(`/pact/profissional/meses/${ano}/${cns}/${mat}`)
+                .then(resp => setListaMeses(resp.data))
+                .catch(e => console.log(e))
+            }
+        }
+        fetchData()        
         fetchDados()
+        fetchAnos()
+        fetchMeses()
         fetchListaProcedimentos()
     }, [userData, ano, mes, cnes, cns, mat])   
 
@@ -117,7 +133,7 @@ const TableMonitor = (props) => {
                 font: 'helvetica',
                 fontStyle: 'normal'
             })
-            doc.save('Meta Individual - ' + nome + '.pdf')
+            doc.save('Meta Individual - ' + mat + ' - ' + nome + '.pdf')
         }
     }
 
@@ -132,14 +148,21 @@ const TableMonitor = (props) => {
                         </div>
                         <span />
                         <div>
-                            <span>Mês de Pactuação:</span>
-                            <h4>{mesesIdx[mes]}</h4>
+                            <h3>Mês de Monitoramento:</h3>
+                            <Form className='mes-select'>
+                                <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => setMes(e.target.value)}>
+                                    {listaMeses ? listaMeses.map(retorno => <option value={retorno.mes}>{mesesIdx[retorno.mes]}</option>) : null}
+                                </Form.Control>
+                                <Form.Control as='select' size='sm' custom onChange={e => setAno(e.target.value)}>
+                                    {listaAnos ? listaAnos.map(retorno => <option value={retorno.ano}>{retorno.ano}</option>) : null}
+                                </Form.Control>
+                            </Form>
                         </div>
                     </div>
                     <div className='sub-menu'>
-                        <div></div>
-                        <div></div>
                         <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
+                        <div />
+                        <div />
                     </div>
                     <Table striped bordered hover>
                         <thead>

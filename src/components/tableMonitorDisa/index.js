@@ -16,6 +16,8 @@ const TableMonitor = (props) => {
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
+    const [listaAnos, setListaAnos] = useState(undefined)
+    const [listaMeses, setListaMeses] = useState(undefined)
     const [listaProcedimentos, setListaProcedimentos] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
