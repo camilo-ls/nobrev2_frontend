@@ -6,7 +6,9 @@ import TableMon from '../../components/table_monitor'
 
 const EscolherMatricula = (props) => {
     const { userData } = useContext(userContext)
+    const [cns, setCns] = useState('')
     const [mat, setMat] = useState('')
+    const [cnes, setCnes] = useState('')
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     //const [showDialog, setShowDialog] = useState(false)
@@ -64,10 +66,29 @@ const EscolherMatricula = (props) => {
             }
         }
 
+        const fetchDados = async () => {
+            if (props.cnes && props.cns && props.mat) {
+                setCnes(props.cnes)
+                setCns(props.cns)
+                setMat(props.mat)
+            }
+            else if (props.location && props.location.state) {
+                setCns(props.location.state.cns)
+                setCnes(props.location.state.cnes)
+                setMat(props.location.state.mat)
+            }
+            else {
+                if (userData.user) {
+                    setCns(userData.user.cns)
+                    setCnes(userData.user.cnes)
+                }
+            }
+        }
+
         fetchData()
+        fetchDados()
         fetchMatriculas()
-        console.log(listaMat)        
-    }, [userData, mat])
+    }, [userData])
         
     return (
         <div className='total-area'>
@@ -76,12 +97,12 @@ const EscolherMatricula = (props) => {
                     {listaMat ? 
                     <>
                         <div className='escolher-matricula'>
-                            <Form.Control as='select' onChange={e => setMat(e.target.value)}>
+                            <Form.Control as='select' defaultValue={mat} onChange={e => setMat(e.target.value)}>
                                 {listaMat.map(servidor => <option value={servidor.mat}>{servidor.mat}</option>)}
                             </Form.Control>
                         </div>
                         <hr />
-                        <TableMon key={mat} cnes={userData.user.cnes} cns={userData.user.cns} mat={mat} />
+                        <TableMon key={mat} cnes={cnes} cns={cns} mat={mat} />
                     </>
                     :
                     <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                    

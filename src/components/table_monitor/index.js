@@ -35,41 +35,37 @@ const TableMonitor = (props) => {
     }
 
     useEffect(() => {
-        const fetchListaProcedimentos = async () => {
+        const fetchDados = async () => {
             if (props.cnes && props.cns && props.mat) {
                 if (props.cnes != cnes) setCnes(props.cnes)
                 if (props.cns != cns) setCns(props.cns)
                 if (props.mat != mat) setMat(props.mat)
                 if (props.mes) setMes(props.mes)
-                if (props.ano) setAno(props.ano) 
-                await api.get(`prof/pmp/${ano}/${mes}/${cnes}/${cns}/${mat}`)
-                .then(resp => {
-                    if (resp) setListaProcedimentos(resp.data)
-                    fetchNome()
-                })
-                .catch(e => console.log(e))
+                if (props.ano) setAno(props.ano)
             }
             else if (props.location && props.location.state) {
-                await api.get(`prof/pmp/${props.location.state.ano}/${props.location.state.mes}/${props.location.state.cnes}/${props.location.state.cns}/${props.location.state.mat}`)
-                .then(resp => {
-                    if (resp) setListaProcedimentos(resp.data)
-                    setMat(props.location.state.mat)
-                    fetchNome()
-                })
-                .catch(e => console.log(e))
+                if (props.location.state.cnes != cnes) setCnes(props.location.state.cnes)
+                if (props.location.state.cns != cns) setCns(props.location.state.cns)
+                if (props.location.state.mat != mat) setMat(props.location.state.mat)   
             }
             else {
                 if (userData.user) {
-                    await api.get(`/prof/pmp/${ano}/${mes}/${userData.user.cnes}/${userData.user.cns}/${userData.user.mat}`)
-                    .then(resp => {
-                        if (resp) setListaProcedimentos(resp.data)
-                        setMat(userData.user.mat)
-                        fetchNome()                   
-                    })
-                    .catch(e => console.log(e))                
+                    setCnes(userData.user.cnes)
+                    setCns(userData.user.cns)
+                    setMat(userData.user.mat)
                 }
-            }            
+            }
         }
+
+        const fetchListaProcedimentos = async () => {
+            await api.get(`prof/pmp/${ano}/${mes}/${cnes}/${cns}/${mat}`)
+                .then(resp => {
+                    if (resp) setListaProcedimentos(resp.data)
+                    fetchNome()
+                })
+                .catch(e => console.log(e))
+        }
+
         const fetchData = async () => {
             if (props.location && props.location.state) {
                 setMes(props.location.state.mes)
@@ -94,8 +90,9 @@ const TableMonitor = (props) => {
             }            
         }
         fetchData()
+        fetchDados()
         fetchListaProcedimentos()
-    }, [userData, ano, mes])   
+    }, [userData, ano, mes, cnes, cns, mat])   
 
     const MontarTabelaLinha = (proc) => {
         return (
@@ -106,11 +103,7 @@ const TableMonitor = (props) => {
     const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
         const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]
-        if (listaProcedimentos) {
-            let nome = ''
-            if (props.location && props.location.state) nome = props.location.state.nome
-            else if (props.cns && props.mat) await api.get(`/prof/${props.cns}/${props.mat}`).then(resp => nome = resp.data.nome)
-            else nome = userData.user.nome
+        if (listaProcedimentos) {            
             doc.autoTable({                
                 head: [['Profissional', 'Ano', 'Mês']],
                 body: [[nome, ano, mesesIdx[mes]]]

@@ -126,7 +126,6 @@ const TablePact = (props) => {
         fetchListaFuncionarios()        
         fetchMaxDias()
         fetchNomeUnidade()
-        console.log(cnes)
     }, [userData, ano, mes])
     
     const MontarTabelaLinha = (func) => {
