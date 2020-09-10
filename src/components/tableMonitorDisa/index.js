@@ -1,16 +1,22 @@
 import React, { useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import { Table, Form, Spinner } from 'react-bootstrap'
+import { Table, Form, Spinner, Button } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import TabelaLinha from '../table_monitor_linha'
 
 import './styles.css'
 
+import jspdf from 'jspdf'
+import 'jspdf-autotable'
+
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
+    const [disa, setDisa] = useState(undefined)
+    const [cnes, setCnes] = useState('')
+    const [nome, setNome] = useState('')
     const [maxAno, setMaxAno] = useState('')
     const [maxMes, setMaxMes] = useState('')
     const [showDialog, setShowDialog] = useState(false)
@@ -19,6 +25,7 @@ const TableMonitor = (props) => {
     const [listaAnos, setListaAnos] = useState(undefined)
     const [listaMeses, setListaMeses] = useState(undefined)
     const [listaProcedimentos, setListaProcedimentos] = useState(undefined)
+    const [listaUnidades, setListaUnidades] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -32,39 +39,76 @@ const TableMonitor = (props) => {
     }
 
     useEffect(() => {
-        const fetchListaProcedimentos = async () => {
-            if (props.location.state) {
-                await api.get(`/pact/disa_pact/${ano}/${mes}/${props.location.state.cnes}`)
-                .then(resp => {
-                    if (resp) setListaProcedimentos(resp.data)
-                })
-                .catch(e => console.log(e))
+        const fetchDisa = async () => {
+            if (props.location && props.location.state) {
+                setDisa(props.location.state.disa)
             }
             else {
                 if (userData.user) {
-                    console.log(userData)          
-                    await api.get(`/pact/disa_pact/${ano}/${mes}/${userData.user.cnes}`)
-                    .then(resp => {
-                        if (resp) setListaProcedimentos(resp.data)                    
-                    })
-                    .catch(e => console.log(e))                
+                    setDisa(userData.user.cnes)
                 }
-            }            
+            }
         }
+
+        const fetchNome = async () => {
+            if (disa) {
+                if (!cnes) setNome(disa)
+                else await api.get(`/cnes/${cnes}`)
+                .then(unidade => setNome(unidade.data.nome))
+                .catch(e => console.log(e))
+            }
+        }
+
+        const fetchUnidades = async () => {
+            if (!listaUnidades) {
+                await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${disa}`)
+                .then(unidades => setListaUnidades(unidades.data))
+                .catch(e => console.log(e))
+            }
+        }
+
+        const fetchListaProcedimentos = async () => {
+            if (cnes == '') await api.get(`/pact/disa_pact/${ano}/${mes}/${disa}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+            else await api.get(`/pact/unidade_pact/${ano}/${mes}/${cnes}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+        }
+
         const fetchData = async () => {
-            await api.get('/pact/data')
-            .then(resp => {
-                setAno(resp.data.ano)
-                if (props.location.state) setMes(resp.data.mes + 1)
-                else setMes(resp.data.mes + 1)
-                setMaxAno(resp.data.ano)
-                setMaxMes(resp.data.mes + 1)                
-            })
-            .catch(e => console.log(e))
+            if (ano == '' || mes == '') {
+                await api.get('/pact/data')
+                .then(resp => {
+                    setAno(resp.data.ano)
+                    if (props.location.state) setMes(resp.data.mes + 1)
+                    else setMes(resp.data.mes + 1)
+                    setMaxAno(resp.data.ano)
+                    setMaxMes(resp.data.mes + 1)                
+                })
+                .catch(e => console.log(e))
+            }
         }
-        if (mes == '' || ano == '') fetchData()
-        fetchListaProcedimentos()        
-    }, [userData, ano, mes])   
+
+        const fetchAnos = async () => {
+            if (!listaAnos) {
+                await api.get(`/pact/disa/anos/${disa}`)
+                .then(anos => setListaAnos(anos.data))
+                .catch(e => console.log(e))
+            }
+        }
+
+        const fetchMeses = async () => {
+            if (!listaMeses) {
+                await api.get(`/pact/disa/meses/${ano}/${disa}`)
+                .then(meses => setListaMeses(meses.data))
+                .catch(e => console.log(e))
+            }
+        }
+        fetchData()
+        fetchAnos()
+        fetchMeses()
+        fetchDisa()
+        fetchUnidades()
+        fetchNome()
+        fetchListaProcedimentos()
+    }, [userData, ano, mes, disa, cnes])   
 
     const MontarTabelaLinha = (proc) => {
         return (
@@ -72,38 +116,57 @@ const TableMonitor = (props) => {
         )
     }
 
+    const imprimirPDF = async () => {
+        var doc = new jspdf('p', 'pt', 'a4')
+        const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]
+        if (listaProcedimentos) {            
+            doc.autoTable({                
+                head: [['Local', 'Ano', 'Mês']],
+                body: [[nome, ano, mesesIdx[mes]]]
+            })
+            doc.autoTable({
+                head: cabeçalho,
+                body: listaProcedimentos.map(proc => {
+                    return [proc.cod, proc.nome, proc.quantidade]
+                }),
+                margin: { top: 100 },
+                font: 'helvetica',
+                fontStyle: 'normal'
+            })
+            if (cnes == '') doc.save('Meta do Distrito - ' + nome + '.pdf')
+            else doc.save('Meta da Unidade - ' + nome + '.pdf')
+        }
+    }
+
     return (
         <div className='total-area'>
             {userData.user && userData.user.nivel >= 2 ?
                 <>
                     <div className='cabeçalho-tabela'>
-                        <h4>Tabela de Metas</h4>
+                        <div>
+                            <h4>Tabela de Metas</h4>
+                            <Form.Control as='select' defaultValue='' onChange={e => {setListaProcedimentos(undefined); setCnes(e.target.value);}}>
+                                <option value=''>{disa}</option>
+                                {listaUnidades ? listaUnidades.map(unidade => <option value={unidade.cnes}>{unidade.nome}</option>) : null}
+                            </Form.Control>
+                        </div>                        
                         <span />
                         <div>
-                            <span>MÊS DE PACTUAÇÃO:</span>
-                            <Form className='mes-select'>
-                                <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => { setListaProcedimentos(undefined); setMes(e.target.value); }}>
-                                    {maxMes >= 1 ? <option value='1'>Janeiro</option> : null}
-                                    {maxMes >= 2 ? <option value='2'>Fevereiro</option> : null}
-                                    {maxMes >= 3 ? <option value='3'>Março</option> : null}
-                                    {maxMes >= 4 ? <option value='4'>Abril</option> : null}
-                                    {maxMes >= 5 ? <option value='5'>Maio</option> : null}
-                                    {maxMes >= 6 ? <option value='6'>Junho</option> : null}
-                                    {maxMes >= 7 ? <option value='7'>Julho</option> : null}
-                                    {maxMes >= 8 ? <option value='8'>Agosto</option> : null}
-                                    {maxMes >= 9 ? <option value='9'>Setembro</option> : null}
-                                    {maxMes >= 10 ? <option value='10'>Outubro</option> : null}
-                                    {maxMes >= 11 ? <option value='11'>Novembro</option> : null}
-                                    {maxMes >= 12 ? <option value='12'>Dezembro</option> : null}
-                                </Form.Control>
-                                <Form.Control as='select' size='sm' custom>
-                                    <option value='2020'>2020</option>
-                                </Form.Control>
-                            </Form>
+                            <div>
+                            <span>Data de Monitoramento:</span>
+                                <Form className='mes-select'>                                    
+                                    <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => {setListaProcedimentos(undefined); setMes(e.target.value);}}>
+                                        {listaMeses ? listaMeses.map(meses => <option value={meses.mes}>{mesesIdx[meses.mes]}</option>) : null}
+                                    </Form.Control>
+                                    <Form.Control as='select' size='sm' custom onChange={e => setAno(e.target.value)}>
+                                        {listaAnos ? listaAnos.map(anos => <option value={anos.ano}>{anos.ano}</option>) : null}
+                                    </Form.Control>
+                                </Form>
+                            </div>                            
                         </div>
                     </div>
                     <div className='sub-menu'>
-                        
+                    <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
                     </div>
                     <Table striped bordered hover>
                         <thead>

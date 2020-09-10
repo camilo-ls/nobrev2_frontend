@@ -118,14 +118,14 @@ const TableMonitor = (props) => {
 
     const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
-        const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]
-        if (listaProcedimentos) {            
+        if (listaProcedimentos) {
+
             doc.autoTable({                
                 head: [['Profissional', 'Ano', 'Mês']],
                 body: [[nome, ano, mesesIdx[mes]]]
             })
             doc.autoTable({
-                head: cabeçalho,
+                head: [['Código', 'Nome do procedimento', 'Quantidade']],
                 body: listaProcedimentos.map(proc => {
                     return [proc.cod, proc.nome, proc.quantidade]
                 }),
