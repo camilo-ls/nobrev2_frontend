@@ -1,0 +1,11 @@
+.cabeçalho-tabela-add {
+    margin: auto;
+    display: grid;
+    grid-template-columns: 25% 50% 10% 15%;
+    margin-bottom: 20px;
+}
+
+.table-header-add {
+    display: grid;
+    grid-template-columns: 10% 15% 30% 20% 10% 15%;
+}

@@ -4,8 +4,6 @@ import logo from '../../img/nobre.png'
 
 import userContext from '../../context/userContext'
 
-
-
 function MenuBar(props) {
     const { userData } = useContext(userContext)
 
@@ -22,7 +20,8 @@ function MenuBar(props) {
           <div className='menu-nav'>
           {userData.user && userData.user.nivel == 0 ? (
                 <>                    
-                    <a className='menu-link' href="/profissional">Minhas Metas</a>                        
+                    <a className='menu-link' href="/profissional">Minhas Metas</a>
+                    <a className='menu-link' href="/profissional/stats">Registros</a>                      
                 </>
             ) : null}
             {userData.user && userData.user.nivel == 1 ? (
