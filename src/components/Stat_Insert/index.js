@@ -1,7 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react'
 import api from '../../services/api'
-import {Table, Spinner, Form, Button, Row, Col} from 'react-bootstrap'
+import {Table, Form, Button} from 'react-bootstrap'
 import userContext from '../../context/userContext'
+import StatLinha from './Stat_Insert_Linha'
 
 import './styles.css'
 
@@ -42,9 +43,7 @@ const TableStat = props => {
     
     const montarLinha = props => {
         return (
-            <tr>
-                <td>Linha</td>
-            </tr>
+            <StatLinha stat={props} />
         )
     }
 
@@ -66,17 +65,19 @@ const TableStat = props => {
                     <h4>Histórico</h4>
                     <Table stripered bordered hover>
                         <thead>
-                            <tr className='table-header-add'>
+                            <tr className='cabeçalho-tabela-registro'>
                                 <th className='table-stat-id'>ID</th>
                                 <th className='table-stat-agravo'>Agravo</th>
                                 <th className='table-stat-proc'>Procedimento</th>
-                                <th className='table-stat-data'>Data do Registro</th>
+                                <th className='table-stat-data'>Data</th>
                                 <th className='table-stat-mes'>Quantidade</th>
                                 <th className='table-stat-mes'>Opções</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {listaStat ? listaStat.map(montarLinha) : null}
+                            {listaStat ? listaStat.map(montarLinha)
+                            :
+                            <h3>Não existem registros para serem exibidos.</h3>}
                         </tbody>
                     </Table>
                 </>

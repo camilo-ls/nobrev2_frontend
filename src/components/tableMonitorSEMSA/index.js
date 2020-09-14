@@ -11,13 +11,17 @@ const TablePactSemsa = (props) => {
     const [mes, setMes] = useState('')    
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
+
+    const [listaAnos, setListaAnos] = useState(undefined)
+    const [listaMeses, setListaMeses] = useState(undefined)
     
     const [listaUnidades, setListaUnidades] = useState(undefined)
     const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
 
     const [disa, setDisa] = useState(undefined)
-    const [unidade, setUnidade] = useState(undefined)
-    const [funcionario, setFuncionario] = useState(undefined)
+    const [cnes, setCnes] = useState(undefined)
+    const [cns, setCns] = useState(undefined)
+    const [mat, setMat] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -32,43 +36,54 @@ const TablePactSemsa = (props) => {
 
     useEffect(() => {        
         const fetchData = async () => {
-            await api.get('/pact/data')
-            .then(resp => {
-                setAno(resp.data.ano)
-                setMes(resp.data.mes + 1)
-            })
-            .catch(e => console.log(e))
+            if (ano == '' || mes == '') {
+                await api.get('/pact/data')
+                    .then(resp => {
+                        setAno(resp.data.ano)
+                        if (props.location.state) setMes(resp.data.mes + 1)
+                        else setMes(resp.data.mes + 1)                       
+                    })
+                    .catch(e => console.log(e))
+            }
         }
 
-        const fetchListaUnidades = async () => {
-            if (props.location.state) {
-                await api.get(`/pact/faltam_pactuar/${disa}/${ano}/${mes}`)
-                .then(resp => {
-                    if (resp) setListaUnidades(resp.data)
-                })
-                .catch(e => console.log(e.message))
-            }
-            else if (userData.user) {
-                await api.get(`/pact/faltam_pactuar/${disa}/${ano}/${mes}`)
-                .then(resp => {
-                    if (resp) setListaUnidades(resp.data)
-                })
-                .catch(e => console.log(e.message))
+        const fetchAnos = async () => {
+            if (!listaAnos) {
+                await api.get(`/pact/semsa/anos`)
+                    .then(anos => setListaAnos(anos.data))
+                    .catch(e => console.log(e))
             }
         }
-        const fetchListaFuncionarios = async () => {                
-            if (unidade) {                
-                await api.get(`/pact/unidade/${unidade}/${ano}/${mes}`)
-                .then(resp => {
-                    if (resp) setListaFuncionarios(resp.data)                    
-                })
-                .catch(e => console.log(e))                
+
+        const fetchMeses = async () => {
+            if (!listaMeses) {
+                await api.get(`/pact/semsa/meses/${ano}`)
+                    .then(meses => setListaMeses(meses.data))
+                    .catch(e => console.log(e))
             }
         }
+
+        const fetchUnidades = async () => {
+            await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${disa}`)
+                    .then(unidades => setListaUnidades(unidades.data))
+                    .catch(e => console.log(e))
+        }
+
+        const fetchListaFuncionarios = async () => {
+            await api.get(`/pact/unidade/${ano}/${mes}/${cnes}`)
+                .then(resp => {
+                    if (resp) setListaFuncionarios(resp.data)
+                })
+                .catch(e => console.log(e))
+        }
+
         fetchData()
-        fetchListaUnidades()
+        fetchAnos()
+        fetchMeses()
+        fetchUnidades()
         fetchListaFuncionarios()
-    }, [userData, ano, mes, disa, unidade, funcionario])    
+        console.log(disa, cnes, cns, mat)
+    }, [userData, ano, mes, disa, cnes, cns, mat])    
 
     
     return (
@@ -79,10 +94,9 @@ const TablePactSemsa = (props) => {
                         <h4>Pactuação das Unidades</h4>
                         <span />
                         <div>
-                            <h4>Mês de Pactuação:</h4>
-                            <h4>{mesesIdx[mes]}</h4>
                         </div>
                     </div>
+                    <hr />
                     <div className='sub-menu'>
                         <div>
                             <Form.Control as='select' value={disa} onChange={e => setDisa(e.target.value)}>
@@ -95,18 +109,20 @@ const TablePactSemsa = (props) => {
                             </Form.Control>
                         </div>
                         <div>
-                            <Form.Control as='select' defaultValue={unidade} onChange={e => setUnidade(e.target.value)}>
+                            <Form.Control as='select' defaultValue={cnes} onChange={e => setCnes(e.target.value)}>
+                                <option value='null'>Selecione...</option>
                                 {listaUnidades ? listaUnidades.map(unidade => <option value={unidade.cnes}>{unidade.nome}</option>) : null}
                             </Form.Control>
                         </div>
                         <div>
-                            <Form.Control as='select' defaultValue={funcionario} onChange={e => setFuncionario(e.target.value) }>
-                                <option value='null'>Toda a Unidade</option>
-                                {listaFuncionarios ? listaFuncionarios.map(func => <option value={func.cns}>{func.nome}</option>) : null}
+                            <Form.Control as='select' defaultValue={mat} onChange={e => { setCns(e.target.value); setMat(e.target.dataset.data-mat.value); }}>
+                                <option mat='' value='null'>Toda a Unidade</option>
+                                {listaFuncionarios ? listaFuncionarios.map(func => <option mat={func.mat} value={func.cns}>{func.nome}</option>) : null}
                             </Form.Control>    
                         </div>                        
                     </div>
-                    {funcionario ? <MonIndividual key={funcionario} cnes={unidade} cns={funcionario} ano={ano} mes={mes} /> : null}
+                    <hr />
+                    {mat && cnes ? <MonIndividual key={mat} cnes={cnes} cns={cns} mat={mat} ano={ano} mes={mes} /> : null}
                 </>
             :
                 <>

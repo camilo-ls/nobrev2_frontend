@@ -19,6 +19,7 @@ const TableMonitor = (props) => {
     const [nome, setNome] = useState('')
     const [maxAno, setMaxAno] = useState('')
     const [maxMes, setMaxMes] = useState('')
+    
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     

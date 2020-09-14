@@ -5,7 +5,7 @@
     margin-bottom: 20px;
 }
 
-.table-header-add {
+.cabeçalho-tabela-registro {
     display: grid;
-    grid-template-columns: 10% 15% 30% 20% 10% 15%;
+    grid-template-columns: 10% 15% 30% 15% 15% 15%;
 }
