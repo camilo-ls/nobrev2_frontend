@@ -20,8 +20,7 @@ function MenuBar(props) {
           <div className='menu-nav'>
           {userData.user && userData.user.nivel == 0 ? (
                 <>                    
-                    <a className='menu-link' href="/profissional">Minhas Metas</a>
-                    <a className='menu-link' href="/profissional/stats">Registros</a>                      
+                    <a className='menu-link' href="/profissional">Minhas Metas</a>                   
                 </>
             ) : null}
             {userData.user && userData.user.nivel == 1 ? (
@@ -38,7 +37,7 @@ function MenuBar(props) {
             ) : null}
             {userData.user && userData.user.nivel >= 3 ? (
                 <>
-                    <a className='menu-link' href="/semsa">Monitoramento de Metas</a>                 
+                    <a className='menu-link' href="/semsa">Monitoramento de Metas</a>
                 </>
             ) : null}
             {!userData.user ? (

@@ -9,6 +9,8 @@ import './styles.css'
 
 import jspdf from 'jspdf'
 import 'jspdf-autotable'
+import logoNobre64 from '../../img/nobrebase64'
+import logoCid64 from '../../img/cidbase64'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
@@ -119,18 +121,19 @@ const TableMonitor = (props) => {
 
     const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
-        const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]
+        doc.addImage(logoNobre64, 'PNG', 50, 20, 200, 75)
+        doc.addImage(logoCid64, 'PNG', 450, 20, 100, 75)
         if (listaProcedimentos) {            
             doc.autoTable({                
                 head: [['Local', 'Ano', 'Mês']],
-                body: [[nome, ano, mesesIdx[mes]]]
+                body: [[nome, ano, mesesIdx[mes]]],
+                margin: {top: 100}
             })
             doc.autoTable({
-                head: cabeçalho,
+                head: [['Código', 'Nome do procedimento', 'Quantidade']],
                 body: listaProcedimentos.map(proc => {
                     return [proc.cod, proc.nome, proc.quantidade]
                 }),
-                margin: { top: 100 },
                 font: 'helvetica',
                 fontStyle: 'normal'
             })

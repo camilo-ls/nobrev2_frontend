@@ -5,6 +5,8 @@ import userContext from '../../context/userContext'
 
 import MonIndividual from '../../components/table_monitor'
 
+import './styles.css'
+
 const TablePactSemsa = (props) => {
     const { userData } = useContext(userContext)
     const [ano, setAno] = useState('')
@@ -18,6 +20,7 @@ const TablePactSemsa = (props) => {
     const [listaUnidades, setListaUnidades] = useState(undefined)
     const [listaFuncionarios, setListaFuncionarios] = useState(undefined)
 
+    const [func, setFunc] = useState(undefined)
     const [disa, setDisa] = useState(undefined)
     const [cnes, setCnes] = useState(undefined)
     const [cns, setCns] = useState(undefined)
@@ -77,14 +80,27 @@ const TablePactSemsa = (props) => {
                 .catch(e => console.log(e))
         }
 
+        const fetchFunc = async () => {
+            if (ano && mes && cns && mat)
+            await api.get(`/prof/id/${ano}/${mes}/${cns}/${mat}`)
+            .then(func => setFunc(func.data))
+            .catch(e => console.log(e))
+        }
+
         fetchData()
         fetchAnos()
         fetchMeses()
         fetchUnidades()
         fetchListaFuncionarios()
-        console.log(disa, cnes, cns, mat)
+        fetchFunc()
     }, [userData, ano, mes, disa, cnes, cns, mat])    
 
+    const setDados = (e) => {
+        const cns = e.target.value
+        const mat = e.target.selectedOptions[0].getAttribute('data-mat')
+        setCns(cns)
+        setMat(mat)
+    }  
     
     return (
         <div className='total-area'>
@@ -115,14 +131,46 @@ const TablePactSemsa = (props) => {
                             </Form.Control>
                         </div>
                         <div>
-                            <Form.Control as='select' defaultValue={mat} onChange={e => { setCns(e.target.value); setMat(e.target.dataset.data-mat.value); }}>
-                                <option mat='' value='null'>Toda a Unidade</option>
-                                {listaFuncionarios ? listaFuncionarios.map(func => <option mat={func.mat} value={func.cns}>{func.nome}</option>) : null}
+                            <Form.Control as='select' defaultValue={mat} onChange={e => { setDados(e) }}>
+                                <option mat='' value='null'>Selecione...</option>
+                                {listaFuncionarios ? listaFuncionarios.map(func => <option data-func={func} data-mat={func.mat} value={func.cns}>{func.nome}</option>) : null}
                             </Form.Control>    
                         </div>                        
-                    </div>
+                    </div>                    
                     <hr />
-                    {mat && cnes ? <MonIndividual key={mat} cnes={cnes} cns={cns} mat={mat} ano={ano} mes={mes} /> : null}
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr className='tabela-info-prof'>
+                                <th>Cargo</th>
+                                <th>Matricula</th>
+                                <th>Coef. ESAP</th>
+                                <th>Dias Pactuados</th>                                
+                                <th>Coef. Mês</th>                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className='tabela-info-prof'>
+                                {func ? <td>{func.nome}</td> : <td>...</td>}
+                                {func ? <td>{func.mat}</td> : <td>...</td>}
+                                {func ? <td>{func.coef_ESAP}</td> : <td>...</td>}
+                                {func ? <td>{func.dias_pactuados}</td> : <td>...</td>}                                
+                                {func ? <td>{func.coeficiente}</td> : <td>...</td>}                                                           
+                             </tr>
+                        </tbody>
+                    </Table>
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr className='tabela-just-prof'>
+                                <th>Justificativa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {func && func.justificativa ? <td>{func.justificativa}</td> : <td>...</td>}
+                            </tr>
+                        </tbody>                                      
+                    </Table>
+                    {cns && mat && cnes ? <MonIndividual key={mat} func={func} cnes={cnes} cns={cns} mat={mat} ano={ano} mes={mes} /> : null}
                 </>
             :
                 <>

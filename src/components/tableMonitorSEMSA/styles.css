@@ -1,0 +1,9 @@
+.tabela-info-prof {
+    display: grid;
+    grid-template-columns: 52% 12% 12% 12% 12%;
+}
+
+.tabela-just-prof {
+    display: grid;
+    grid-template-columns: 100%;
+}

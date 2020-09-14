@@ -20,6 +20,7 @@ import TabelaMonSemsa from '../../components/tableMonitorSEMSA'
 import Diretor_EscolherUnidade from '../../components/Diretor_EscolherUnidade'
 import Profissional_EscolherMatricula from '../../components/Profissional_EscolherMatricula'
 import Profissional_Stats from '../../components/Stat_Insert'
+import Semsa_StatView from '../../components/Stat_Visualizar'
 
 const Home = () => {
     const [userData, setUserData] = useState({
@@ -70,6 +71,7 @@ const Home = () => {
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />
                         <Route exact path='/semsa' component={TabelaMonSemsa} />
+                        <Route path='/semsa/stats' component={Semsa_StatView} />
                         <Route exact path='/disa' component={Tabela_Disa} />
                         <Route path='/disa/monitoramento' component={Tabela_Mon_Disa} />
                         <Route path='/disa/revisao' component={Tabela_Pact} />

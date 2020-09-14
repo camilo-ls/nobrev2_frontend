@@ -26,13 +26,12 @@ const StatLinha = (props) => {
     
     return (
         <>
-            <tr key={props.stat.id}>
-                <td id='stat-id'>{props.stat.id}</td>
+            <tr>               
                 <td id='stat-agravo'>{props.stat.agravo}</td>
                 <td id='stat-proc'>{props.stat.nome}</td>
-                <td id='stat-data'>{props.stat.dia}/{props.stat.mes}/{props.stat.ano}</td>
+                <td id='stat-mes'>{props.stat.mes}</td>
+                <td id='stat-ano'>{props.stat.ano}</td>
                 <td id='stat-qt'>{props.stat.quantidade}</td>
-                <td id='stat-opcoes'><Button variant='outline-danger' onClick={apagar}>Apagar</Button></td>
             </tr>
             <Modal show={showDialog} onHide={fecharDialog}>
                 <Modal.Header closeButton>

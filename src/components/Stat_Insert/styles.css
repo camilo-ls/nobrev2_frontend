@@ -4,8 +4,3 @@
     grid-template-columns: 25% 50% 10% 15%;
     margin-bottom: 20px;
 }
-
-.cabeçalho-tabela-registro {
-    display: grid;
-    grid-template-columns: 10% 15% 30% 15% 15% 15%;
-}
