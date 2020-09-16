@@ -63,7 +63,7 @@ const Home = () => {
 
     return (        
         <React.Fragment>         
-            <BrowserRouter>
+            <BrowserRouter basename='/nobre'>
                 <userContext.Provider value={{userData, setUserData}}>
                     <Menubar />
                     <Switch>
