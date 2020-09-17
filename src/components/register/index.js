@@ -74,9 +74,8 @@ function Register() {
        .then(resp => {
            openModal(resp.data.msg)           
         })
-       .catch(e => {
-            if (e.response.data.message) openModal(e.response.data.message)
-            else console.log(e)
+       .catch(erro => {
+        if (erro && erro.response && erro.response.data.message) openModal(erro.response.data.message)
         })
     }
 

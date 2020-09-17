@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import jwtDecode from 'jwt-decode'
 import api from '../../services/api'
 
@@ -62,26 +62,24 @@ const Home = () => {
     }, [])
 
     return (        
-        <React.Fragment>         
-            <BrowserRouter basename='/nobre'>
-                <userContext.Provider value={{userData, setUserData}}>
-                    <Menubar />
-                    <Switch>
-                        <Route exact path='/' component={Intro} />
-                        <Route path='/login' component={Login} />
-                        <Route path='/register' component={Register} />
-                        <Route exact path='/semsa' component={TabelaMonSemsa} />
-                        <Route path='/semsa/stats' component={Semsa_StatView} />
-                        <Route exact path='/disa' component={Tabela_Disa} />
-                        <Route path='/disa/monitoramento' component={Tabela_Mon_Disa} />
-                        <Route path='/disa/revisao' component={Tabela_Pact} />
-                        <Route exact path='/diretor' component={Diretor_EscolherUnidade} />
-                        <Route path='/diretor/monitoramento' component={Tabela_Mon_Unidade} />
-                        <Route exact path='/profissional' component={Profissional_EscolherMatricula} />
-                        <Route path='/profissional/stats' component={Profissional_Stats} />
-                    </Switch>
-                </userContext.Provider>
-            </BrowserRouter>            
+        <React.Fragment> 
+            <userContext.Provider value={{userData, setUserData}}>
+                <Menubar />
+                <Switch>
+                    <Route exact path='/' component={Intro} />
+                    <Route path='/login' component={Login} />
+                    <Route path='/register' component={Register} />
+                    <Route exact path='/semsa' component={TabelaMonSemsa} />
+                    <Route path='/semsa/stats' component={Semsa_StatView} />
+                    <Route exact path='/disa' component={Tabela_Disa} />
+                    <Route path='/disa/monitoramento' component={Tabela_Mon_Disa} />
+                    <Route path='/disa/revisao' component={Tabela_Pact} />
+                    <Route exact path='/diretor' component={Diretor_EscolherUnidade} />
+                    <Route path='/diretor/monitoramento' component={Tabela_Mon_Unidade} />
+                    <Route exact path='/profissional' component={Profissional_EscolherMatricula} />
+                    <Route path='/profissional/stats' component={Profissional_Stats} />
+                </Switch>
+            </userContext.Provider>
         </React.Fragment>       
     )
 }

@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "http://localhost:3000/nobre",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -10,7 +10,6 @@
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.5.0",
-    "cors": "^2.8.5",
     "jspdf": "^2.0.0",
     "jspdf-autotable": "^3.5.9",
     "jwt-decode": "^2.2.0",

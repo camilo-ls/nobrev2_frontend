@@ -68,10 +68,14 @@ const TabelaLinha = (props) => {
         console.log(novoFunc)
         api.post('/pact/pactuar', novoFunc)
         .then(resp => {
-            abrirDialog(resp.data.message)
-            setFechado(true)
+            if (resp && resp.data.message) {
+                abrirDialog(resp.data.message)
+                setFechado(true)
+            }            
         })
-        .catch(e => abrirDialog(e.message))
+        .catch(e => {
+            if (e && e.response.data.message) abrirDialog(e.response.data.message)
+        })
     }
 
     const imprimirPDF = async () => {
