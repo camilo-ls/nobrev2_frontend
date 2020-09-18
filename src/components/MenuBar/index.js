@@ -20,30 +20,30 @@ function MenuBar(props) {
           <div className='menu-nav'>
           {userData.user && userData.user.nivel == 0 ? (
                 <>                    
-                    <a className='menu-link' href="/profissional">Minhas Metas</a>                   
+                    <a className='menu-link' href="/nobre/profissional">Minhas Metas</a>                   
                 </>
             ) : null}
             {userData.user && userData.user.nivel == 1 ? (
                 <>
-                    <a className='menu-link' href="/diretor">Pactuação</a>             
-                    <a className='menu-link' href="/diretor/monitoramento">Monitoramento</a>                        
+                    <a className='menu-link' href="/nobre/diretor">Pactuação</a>             
+                    <a className='menu-link' href="/nobre/diretor/monitoramento">Monitoramento</a>                        
                 </>
             ) : null}
             {userData.user && userData.user.nivel == 2 ? (
                 <>
-                    <a className='menu-link' href="/disa">Pactuação</a>                               
-                    <a className='menu-link' href="/disa/monitoramento">Monitoramento</a>           
+                    <a className='menu-link' href="/nobre/disa">Pactuação</a>                               
+                    <a className='menu-link' href="/nobre/disa/monitoramento">Monitoramento</a>           
                 </>
             ) : null}
             {userData.user && userData.user.nivel >= 3 ? (
                 <>
-                    <a className='menu-link' href="/semsa">Monitoramento de Metas</a>
+                    <a className='menu-link' href="/nobre/semsa">Monitoramento de Metas</a>
                 </>
             ) : null}
             {!userData.user ? (
                 <>
-                    <a className='menu-link' href="/login">Entrar</a>             
-                    <a className='menu-link' href="/register">Solicitar Acesso</a>                        
+                    <a className='menu-link' href="/nobre/login">Entrar</a>             
+                    <a className='menu-link' href="/nobre/register">Solicitar Acesso</a>                        
                 </>
             ) : null}
           </div>
