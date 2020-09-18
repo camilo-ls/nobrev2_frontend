@@ -30,7 +30,7 @@ function Register() {
             }
         })
         .catch(e => {
-            if (e.response.data.message) openModal(e.response.data.message)
+            if (e && e.response.data.message) openModal(e.response.data.message)
             else console.log(e)
         })
     }
@@ -42,7 +42,7 @@ function Register() {
             setUserCnesNome(resp.data.nome)
         })
         .catch(e => {
-            if (e.response.data.message) openModal(e.response.data.message)
+            if (e && e.response.data.message) openModal(e.response.data.message)
             else console.log(e)
         })
     }
