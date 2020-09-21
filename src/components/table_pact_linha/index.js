@@ -63,9 +63,9 @@ const TabelaLinha = (props) => {
             cnes: props.cnes,
             ano: props.ano,
             mes: props.mes,
-            justificativa: justificativa
-        }
-        console.log(novoFunc)
+            justificativa: justificativa,
+            dias_mes: diasUteisMes
+        }        
         api.post('/pact/pactuar', novoFunc)
         .then(resp => {
             if (resp && resp.data.message) {
