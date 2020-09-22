@@ -12,7 +12,6 @@ import logoCid64 from '../../img/cidbase64'
 import logoNobre64 from '../../img/nobrebase64'
 
 import './styles.css'
-import nobrebase64 from '../../img/nobrebase64'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
@@ -111,6 +110,7 @@ const TableMonitor = (props) => {
         fetchDados()
         fetchAnos()
         fetchMeses()
+        fetchNome()
         fetchListaProcedimentos()
     }, [userData, ano, mes, cnes, cns, mat])   
 

@@ -7,6 +7,9 @@ import 'jspdf-autotable'
 
 import './styles.css'
 
+import logoCid64 from '../../img/cidbase64'
+import logoNobre64 from '../../img/nobrebase64'
+
 const TabelaLinha = (props) => {
     const [diasPactuados, setDiasPactuados] = useState('')
     const [diasUteisMes, setDiasUteisMes] = useState(22)
@@ -87,9 +90,12 @@ const TabelaLinha = (props) => {
             if (resp) {
                 console.log(resp)              
                 let nome = props.func.nome
+                doc.addImage(logoNobre64, 'PNG', 50, 20, 200, 75)
+                doc.addImage(logoCid64, 'PNG', 450, 20, 100, 75)
                 doc.autoTable({                
                     head: [['Profissional', 'Ano', 'Mês']],
-                    body: [[nome, props.ano, mesesIdx[props.mes]]]
+                    body: [[nome, props.ano, mesesIdx[props.mes]]],
+                    margin: { top: 100 }
                 })
                 doc.autoTable({
                     head: cabeçalho,
