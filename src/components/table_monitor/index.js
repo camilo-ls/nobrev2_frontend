@@ -112,7 +112,7 @@ const TableMonitor = (props) => {
         fetchMeses()
         fetchNome()
         fetchListaProcedimentos()
-    }, [userData, ano, mes, cnes, cns, mat])   
+    }, [userData, ano, mes, cnes, cns, mat, nome])   
 
     const MontarTabelaLinha = (proc) => {
         return (
