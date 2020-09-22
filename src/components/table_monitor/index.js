@@ -84,8 +84,8 @@ const TableMonitor = (props) => {
         }
 
         const fetchNome = async () => {
-            if (cns && mat) {
-                await api.get(`/prof/id/${cns}/${mat}`)
+            if (cns) {
+                await api.get(`/prof/cns/${cns}`)
                 .then(resp => {
                 setNome(resp.data.nome)
                 })
@@ -112,7 +112,7 @@ const TableMonitor = (props) => {
         fetchMeses()
         fetchNome()
         fetchListaProcedimentos()
-    }, [userData, ano, mes, cnes, cns, mat, nome])   
+    }, [userData, ano, mes, cnes, cns, mat])
 
     const MontarTabelaLinha = (proc) => {
         return (
