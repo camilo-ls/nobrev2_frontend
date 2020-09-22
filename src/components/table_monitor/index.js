@@ -87,7 +87,7 @@ const TableMonitor = (props) => {
             if (cns) {
                 await api.get(`/prof/cns/${cns}`)
                 .then(resp => {
-                setNome(resp[0].data.nome)
+                setNome(resp.data[0].nome)
                 })
                 .catch(e => console.log(e))
             }            
