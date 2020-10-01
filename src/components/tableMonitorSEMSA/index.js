@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import api from '../../services/api'
-import { Table, Form, Spinner } from 'react-bootstrap'
+import { Table, Form } from 'react-bootstrap'
 import userContext from '../../context/userContext'
 
 import MonIndividual from '../../components/table_monitor'

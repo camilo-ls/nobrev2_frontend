@@ -33,19 +33,28 @@ const TablePactDisa = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            await api.get('/pact/data')
-            .then(async resp => {
+            if (!revisao) {
+                await api.get('/pact/data')
+                .then(async resp => {
                 setAno(resp.data.ano)
-                if (revisao) setMes(resp.data.mes)
-                else setMes(resp.data.mes + 1)
+                setMes(resp.data.mes + 1)
                 setMesAnt(resp.data.mes)              
-                setDia(resp.data.dia)
-                await api.get(`/pact/data_revisao/${ano}/${mes}`)
+                setDia(resp.data.dia)                
+                })
+                .catch(e => console.log(e))
+            }
+        }
+
+        const fetchRevisao = async () => {
+            if (!revisao) {
+                await api.get(`/pact/data_revisao/${ano}/${mes - 1}`)
                 .then(resp => {
-                    if (resp.data.dia == dia) setRevisao(true)
-                })                
-            })
-            .catch(e => console.log(e))
+                if (resp.data.dia == dia) {
+                    setRevisao(true)
+                    setMes(mes - 1)
+                }
+                })     
+            }           
         }
 
         const fetchListaUnidades = async () => {
@@ -83,8 +92,9 @@ const TablePactDisa = (props) => {
             }            
         }
         fetchData()
+        fetchRevisao()
         fetchListaUnidades()
-    }, [userData, ano, mes, revisao])    
+    }, [userData, ano, mes, revisao, listaUnidadesPact])    
 
     const MontarTabelaLinha = (unidade) => {
         return (

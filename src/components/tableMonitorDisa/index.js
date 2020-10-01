@@ -71,8 +71,10 @@ const TableMonitor = (props) => {
         }
 
         const fetchListaProcedimentos = async () => {
-            if (cnes == '') await api.get(`/pact/disa_pact/${ano}/${mes}/${disa}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
-            else await api.get(`/pact/unidade_pact/${ano}/${mes}/${cnes}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+            if (cnes == '') {
+                if (ano && mes && disa) await api.get(`/pact/disa_pact/${ano}/${mes}/${disa}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+                else await api.get(`/pact/unidade_pact/${ano}/${mes}/${cnes}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+            }
         }
 
         const fetchData = async () => {
@@ -111,7 +113,7 @@ const TableMonitor = (props) => {
         fetchUnidades()
         fetchNome()
         fetchListaProcedimentos()
-    }, [userData, ano, mes, disa, cnes])   
+    }, [userData, ano, mes, disa, cnes, listaProcedimentos])   
 
     const MontarTabelaLinha = (proc) => {
         return (
