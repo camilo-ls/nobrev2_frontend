@@ -76,7 +76,7 @@ const EscolherUnidade = (props) => {
                     <>
                         <div className='escolher-unidade'>
                             <Form.Control as='select' onChange={e => setCnes(e.target.value)}>
-                                {listaCnes.map(unidade => <option value={unidade.cnes}>{unidade.nome}</option>)}
+                                {listaCnes.map(unidade => <option value={unidade.cnes}>{unidade.NOME_UNIDADE}</option>)}
                             </Form.Control>
                         </div>
                         <hr />
