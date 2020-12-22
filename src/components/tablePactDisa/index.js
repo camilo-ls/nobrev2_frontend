@@ -33,27 +33,40 @@ const TablePactDisa = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (!revisao) {
+            if (!revisao && (!ano && !mes && !dia)) {
                 await api.get('/pact/data')
                 .then(async resp => {
-                setAno(resp.data.ano)
-                setMes(resp.data.mes + 1)
-                setMesAnt(resp.data.mes)              
-                setDia(resp.data.dia)                
+                    if (resp.data.mes + 1 > 12) {
+                        setMesAnt(12)
+                        setMes(1)
+                        setAno(resp.data.ano + 1)
+                    }
+                    else {
+                        setAno(resp.data.ano)
+                        setMes(resp.data.mes + 1)
+                        setMesAnt(resp.data.mes)  
+                    }      
+                    setDia(resp.data.dia)
+                    console.log(ano, mes, dia)           
                 })
                 .catch(e => console.log(e))
             }
         }
 
         const fetchRevisao = async () => {
-            if (!revisao) {
-                await api.get(`/pact/data_revisao/${ano}/${mes - 1}`)
+            if (!revisao && ano && mes) {
+                let anoAtual = ano
+                if (mes == 1) {
+                    anoAtual = ano - 1
+                }
+                await api.get(`/pact/data_revisao/${anoAtual}/${mes - 1}`)
                 .then(resp => {
-                if (resp.data.dia == dia) {
+                if (resp.data.DIA == dia) {
                     setRevisao(true)
                     setMes(mes - 1)
                 }
-                })     
+                })
+                .catch(e => console.log(e))     
             }           
         }
 

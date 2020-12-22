@@ -22,18 +22,18 @@ const TabelaLinha = (props) => {
 
     useEffect(() => {
         const fetchMaxDias = async () => setMaxDias(props.maxDias)
-        const fetchFechado = async () => setFechado(props.func.fechado)
-        const fetchDiasPactuados = async () => setDiasPactuados(props.func.dias_pactuados)
+        const fetchFechado = async () => setFechado(props.func.FECHADO)
+        const fetchDiasPactuados = async () => setDiasPactuados(props.func.DIAS_PACTUADOS)
         const fetchJustificativa = async () => {
-            if (props.func.justificativa == '' || props.func.justificativa == null) { 
-                props.func.justificativa = 'Selecione...'                
+            if (props.func.JUSTIFICATIVA == '' || props.func.JUSTIFICATIVA == null) { 
+                props.func.JUSTIFICATIVA = 'Selecione...'                
             }
-            setJustificativa(props.func.justificativa)
+            setJustificativa(props.func.JUSTIFICATIVA)
         }
         const fetchDiasUteis = async () => {
             await api.get(`/pact/dias_uteis/${props.ano}/${props.mes}`)
             .then(resp => {
-                setDiasUteisMes(resp.data.dias_uteis)
+                setDiasUteisMes(resp.data.DIAS_UTEIS)
             })
             .catch(e => console.log(e))
         }
@@ -57,10 +57,10 @@ const TabelaLinha = (props) => {
 
     const fechar = async () => {
         const novoFunc = {
-            nome: props.func.nome,
-            cns: props.func.cns,
-            mat: props.func.mat,
-            cbo: props.func.cbo,
+            nome: props.func.NOME_PROF,
+            cns: props.func.CNS,
+            vinc_id: props.func.VINC_ID,
+            cbo: props.func.CBO,
             dias_pactuados: diasPactuados,
             fechado: fechado,
             cnes: props.cnes,
@@ -85,11 +85,11 @@ const TabelaLinha = (props) => {
         const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
         var doc = new jspdf('p', 'pt', 'a4')
         const cabeçalho = [['Código', 'Nome do procedimento', 'Quantidade']]        
-       await api.get(`prof/pmp/${props.ano}/${props.mes}/${props.cnes}/${props.func.cns}/${props.func.mat}`)
+       await api.get(`prof/pmp/${props.ano}/${props.mes}/${props.cnes}/${props.func.CNS}/${props.func.VINC_ID}`)
        .then(resp => {
             if (resp) {
                 console.log(resp)              
-                let nome = props.func.nome
+                let nome = props.func.NOME_PROF
                 doc.addImage(logoNobre64, 'PNG', 50, 20, 200, 75)
                 doc.addImage(logoCid64, 'PNG', 450, 20, 100, 75)
                 doc.autoTable({                
@@ -100,13 +100,13 @@ const TabelaLinha = (props) => {
                 doc.autoTable({
                     head: cabeçalho,
                     body: resp.data.map(proc => {
-                        return [proc.cod, proc.nome, proc.quantidade]
+                        return [proc.COD, proc.NOME_PROCED, proc.QUANTIDADE]
                     }),
                     margin: { top: 100 },
                     font: 'helvetica',
                     fontStyle: 'normal'
                 })
-                doc.save('Meta Individual - ' + props.func.mat + ' - '  + nome + '.pdf')
+                doc.save('Meta Individual - ' + props.func.CNS + ' - '  + nome + '.pdf')
             }
        })
        .catch(e => console.log(e))
@@ -114,10 +114,9 @@ const TabelaLinha = (props) => {
 
     return (
         <>
-            <tr key={props.func.mat + props.func.cns} className={fechado ? 'func-pactuado' : 'func-aberto'}>
-                <td className='tabela-mat'>{props.func.mat}</td>
-                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.cns, mat: props.func.mat, cnes: props.cnes, nome: props.func.nome, ano: props.ano, mes: props.mes}}}>{props.func.nome}</Link></td>
-                <td className='tabela-cargo'>{props.func.cargo}</td>                
+            <tr key={props.func.VINC_ID} className={fechado ? 'func-pactuado' : 'func-aberto'}>
+                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.CNS, vinc_id: props.func.VINC_ID, cnes: props.cnes, nome: props.func.NOME_PROF, ano: props.ano, mes: props.mes}}}>{props.func.NOME_PROF}</Link></td>
+                <td className='tabela-cargo'>{props.func.CARGO}</td>                
                 <td className='tabela-dias'>
                     <Form.Control as='select' className='day-picker' value={diasPactuados} onChange={e => setDiasPactuados(e.target.value)}>
                         {maxDias >= 31 ? <option value='31'>31</option> : null}

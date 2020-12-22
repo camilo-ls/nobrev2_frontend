@@ -93,6 +93,7 @@ const TablePactSemsa = (props) => {
         fetchUnidades()
         fetchListaFuncionarios()
         fetchFunc()
+        console.log(func)
     }, [userData, ano, mes, disa, cnes, cns, mat])    
 
     const setDados = (e) => {

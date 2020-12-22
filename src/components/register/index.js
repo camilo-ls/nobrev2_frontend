@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import {Jumbotron, Form, Button, Modal} from 'react-bootstrap'
 import api from '../../services/api'
 import './styles.css'
@@ -24,13 +23,13 @@ function Register() {
         api.get(`/prof/cpf/${userCpf}`)
         .then(resp => {
             if (resp) {  
-                setUserNome(resp.data.nome)
-                buscarCnes(resp.data.cnes)
-                buscarCbo(resp.data.cbo)
+                setUserNome(resp.data.NOME_PROF)
+                buscarCnes(resp.data.CNES)
+                buscarCbo(resp.data.CBO)
             }
         })
         .catch(e => {
-            if (e && e.response.data.message) openModal(e.response.data.message)
+            if (e && e.response && e.response.data.message) openModal(e.response.data.message)
             else console.log(e)
         })
     }
@@ -38,8 +37,8 @@ function Register() {
     const buscarCnes = cnes => {
         api.get(`/cnes/${cnes}`)
         .then(resp => { 
-            setUserCnes(resp.data.cnes)
-            setUserCnesNome(resp.data.nome)
+            setUserCnes(resp.data.CNES)
+            setUserCnesNome(resp.data.NOME_UNIDADE)
         })
         .catch(e => {
             if (e && e.response.data.message) openModal(e.response.data.message)
@@ -50,8 +49,8 @@ function Register() {
     const buscarCbo = cbo => {
         api.get(`/cbo/${cbo}`)
         .then(resp => {
-            setUserCbo(resp.data.cbo)
-            setUserCargo(resp.data.nome)
+            setUserCbo(resp.data.CBO)
+            setUserCargo(resp.data.NOME_CBO)
         })
         .catch(e => {
             if (e.response.data.message) openModal(e.response.data.message)
@@ -69,7 +68,6 @@ function Register() {
         admin: userAdmin,
         cnes: userCnes
        }
-       console.log(formData)
        api.post('/auth/register', formData)
        .then(resp => {
            openModal(resp.data.msg)           

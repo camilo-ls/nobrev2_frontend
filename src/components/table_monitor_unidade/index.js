@@ -15,14 +15,15 @@ import './styles.css'
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [cnes, setCnes] = useState(undefined)
-    const [nomeUnidade, setNomeUnidade] = useState('')
-    const [ano, setAno] = useState('')
-    const [mes, setMes] = useState('')
-    const [maxAno, setMaxAno] = useState('')
-    const [maxMes, setMaxMes] = useState('')
+    const [nomeUnidade, setNomeUnidade] = useState(undefined)
+    const [ano, setAno] = useState(undefined)
+    const [mes, setMes] = useState(undefined)
+    const [maxAno, setMaxAno] = useState(undefined)
+    const [maxMes, setMaxMes] = useState(undefined)
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
+    const [listaProfissionais, setListaProfissionais] = useState(undefined)
     const [listaProcedimentos, setListaProcedimentos] = useState(undefined)
     const [listaAnos, setListaAnos] = useState(undefined)
     const [listaMeses, setListaMeses] = useState(undefined)
@@ -64,11 +65,10 @@ const TableMonitor = (props) => {
         const fetchData = async () => {
             await api.get('/pact/data')
             .then(resp => {
+                setMes(resp.data.mes)
+                setMaxMes(resp.data.mes)
                 setAno(resp.data.ano)
-                if (props.location.state) setMes(resp.data.mes + 1)
-                else setMes(resp.data.mes + 1)
                 setMaxAno(resp.data.ano)
-                setMaxMes(resp.data.mes + 1)                
             })
             .catch(e => console.log(e))
         }

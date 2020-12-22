@@ -68,8 +68,14 @@ const TablePact = (props) => {
             else {
                 await api.get('/pact/data')
                 .then(resp => {
-                    setAno(resp.data.ano)
-                    setMes(resp.data.mes + 1)
+                    if (resp.data.mes + 1 > 12) {
+                        setMes(1)
+                        setAno(resp.data.ano + 1)
+                    }
+                    else {
+                        setMes(resp.data.mes + 1)
+                        setAno(resp.data.ano)
+                    }
                 })
             .catch(e => console.log(e))
             }            
@@ -106,7 +112,7 @@ const TablePact = (props) => {
             if (props.location && props.location.state) {
                 await api.get(`/cnes/${props.location.state.cnes}`)
                     .then(resp => {
-                        setNomeUnidade(resp.data.nome)
+                        setNomeUnidade(resp.data.NOME_UNIDADE)
                     })
                     .catch(e => console.log(e))
             }
@@ -114,7 +120,7 @@ const TablePact = (props) => {
                 if (userData.user) {
                     await api.get(`/cnes/${userData.user.cnes}`)
                     .then(resp => {
-                        setNomeUnidade(resp.data.nome)
+                        setNomeUnidade(resp.data.NOME_UNIDADE)
                     })
                     .catch(e => console.log(e))
                 }
@@ -158,7 +164,6 @@ const TablePact = (props) => {
                     <Table>
                         <thead>
                             <tr>
-                                <th className='tabela-mat'>Mat.</th>
                                 <th className='tabela-nome'>Nome</th>
                                 <th className='tabela-cargo'>Cargo</th>
                                 <th className='tabela-dias'>Dias Pactuados</th>

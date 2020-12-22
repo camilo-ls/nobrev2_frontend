@@ -15,12 +15,12 @@ import './styles.css'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
-    const [cnes, setCnes] = useState('')
+    const [cnes, setCnes] = useState(undefined)
     const [cns, setCns] = useState(undefined)
-    const [nome, setNome] = useState('')
+    const [nome, setNome] = useState(undefined)
     const [mat, setMat] = useState(undefined)
-    const [ano, setAno] = useState('')
-    const [mes, setMes] = useState('')
+    const [ano, setAno] = useState(undefined)
+    const [mes, setMes] = useState(undefined)
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
 
@@ -73,11 +73,11 @@ const TableMonitor = (props) => {
         }
 
         const fetchData = async () => {
-            if (mes == '' || ano == '') {                
+            if (mes === undefined || ano === undefined) {                
                     await api.get('/pact/data')
                     .then(resp => {
+                        setMes(resp.data.mes)
                         setAno(resp.data.ano)
-                        setMes(resp.data.mes + 1)
                     })
                     .catch(e => console.log(e))
             }

@@ -14,11 +14,11 @@ import logoCid64 from '../../img/cidbase64'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
-    const [ano, setAno] = useState('')
-    const [mes, setMes] = useState('')
+    const [ano, setAno] = useState(undefined)
+    const [mes, setMes] = useState(undefined)
     const [disa, setDisa] = useState(undefined)
     const [cnes, setCnes] = useState('')
-    const [nome, setNome] = useState('')
+    const [nome, setNome] = useState(undefined)
     const [maxAno, setMaxAno] = useState('')
     const [maxMes, setMaxMes] = useState('')
     
@@ -63,36 +63,42 @@ const TableMonitor = (props) => {
         }
 
         const fetchUnidades = async () => {
-            if (!listaUnidades) {
+            if (listaUnidades === undefined && ano && mes && disa) {
                 await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${disa}`)
-                .then(unidades => setListaUnidades(unidades.data))
+                .then(unidades => {
+                    setListaUnidades(unidades.data)
+                })
                 .catch(e => console.log(e))
             }
         }
 
         const fetchListaProcedimentos = async () => {
-            if (cnes == '') {
-                if (ano && mes && disa) await api.get(`/pact/disa_pact/${ano}/${mes}/${disa}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
-                else await api.get(`/pact/unidade_pact/${ano}/${mes}/${cnes}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+            //console.log(ano, mes)
+            if (ano && mes && listaProcedimentos === undefined) {
+                if (cnes == '') {
+                    await api.get(`/pact/disa_pact/${ano}/${mes}/${disa}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+                } 
+                else {                    
+                    await api.get(`/pact/unidade_pact/${ano}/${mes}/${cnes}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
+                }
             }
         }
 
         const fetchData = async () => {
-            if (ano == '' || mes == '') {
+            if (ano === undefined || mes === undefined) {
                 await api.get('/pact/data')
                 .then(resp => {
+                    setMes(resp.data.mes)
+                    setMaxMes(resp.data.mes)
                     setAno(resp.data.ano)
-                    if (props.location.state) setMes(resp.data.mes + 1)
-                    else setMes(resp.data.mes + 1)
-                    setMaxAno(resp.data.ano)
-                    setMaxMes(resp.data.mes + 1)                
+                    setMaxAno(resp.data.ano)            
                 })
                 .catch(e => console.log(e))
             }
         }
 
         const fetchAnos = async () => {
-            if (!listaAnos) {
+            if (listaAnos === undefined && disa) {
                 await api.get(`/pact/disa/anos/${disa}`)
                 .then(anos => setListaAnos(anos.data))
                 .catch(e => console.log(e))
@@ -100,7 +106,7 @@ const TableMonitor = (props) => {
         }
 
         const fetchMeses = async () => {
-            if (!listaMeses) {
+            if (listaMeses === undefined && ano && disa) {
                 await api.get(`/pact/disa/meses/${ano}/${disa}`)
                 .then(meses => setListaMeses(meses.data))
                 .catch(e => console.log(e))
@@ -113,10 +119,12 @@ const TableMonitor = (props) => {
         fetchUnidades()
         fetchNome()
         fetchListaProcedimentos()
-    }, [userData, ano, mes, disa, cnes, listaProcedimentos])   
+
+        console.log(ano, mes, disa, cnes)
+    }, [userData, ano, mes, disa, cnes, listaProcedimentos])
 
     const MontarTabelaLinha = (proc) => {
-        return (
+        return (            
            <TabelaLinha proc={proc} ano={ano} mes={mes} />
         )
     }
@@ -134,24 +142,27 @@ const TableMonitor = (props) => {
             doc.autoTable({
                 head: [['Código', 'Nome do procedimento', 'Quantidade']],
                 body: listaProcedimentos.map(proc => {
-                    return [proc.cod, proc.nome, proc.quantidade]
+                    return [proc.COD_PROCED, proc.NOME_PROCED, proc.QUANTIDADE]
                 }),
                 font: 'helvetica',
                 fontStyle: 'normal'
             })
-            if (cnes == '') doc.save('Meta do Distrito - ' + nome + '.pdf')
+            if (cnes === undefined) doc.save('Meta do Distrito - ' + nome + '.pdf')
             else doc.save('Meta da Unidade - ' + nome + '.pdf')
         }
     }
 
     return (
         <div className='total-area'>
-            {userData.user && userData.user.nivel >= 2 ?
+            {userData.user && userData.user.nivel >= 2 && ano && mes?
                 <>
                     <div className='cabeçalho-tabela'>
                         <div>
                             <h4>Tabela de Metas</h4>
-                            <Form.Control as='select' defaultValue='' onChange={e => {setListaProcedimentos(undefined); setCnes(e.target.value);}}>
+                            <Form.Control as='select' defaultValue='' onChange={e => {
+                                setCnes(e.target.value)
+                                setListaProcedimentos(undefined);
+                            }}>
                                 <option value=''>{disa}</option>
                                 {listaUnidades ? listaUnidades.map(unidade => <option value={unidade.cnes}>{unidade.nome}</option>) : null}
                             </Form.Control>
@@ -160,14 +171,21 @@ const TableMonitor = (props) => {
                         <div>
                             <div>
                             <span>Data de Monitoramento:</span>
-                                <Form className='mes-select'>                                    
-                                    <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => {setListaProcedimentos(undefined); setMes(e.target.value);}}>
-                                        {listaMeses ? listaMeses.map(meses => <option value={meses.mes}>{mesesIdx[meses.mes]}</option>) : null}
-                                    </Form.Control>
-                                    <Form.Control as='select' size='sm' custom onChange={e => setAno(e.target.value)}>
-                                        {listaAnos ? listaAnos.map(anos => <option value={anos.ano}>{anos.ano}</option>) : null}
-                                    </Form.Control>
-                                </Form>
+                            <Form className='mes-select'>                                    
+                                <Form.Control as='select' size='sm' custom defaultValue={mes} onChange={e => {
+                                    setMes(e.target.value) 
+                                    setListaProcedimentos(undefined)
+                                }}>
+                                    {listaMeses ? listaMeses.map(meses => <option value={meses.MES}>{mesesIdx[meses.MES]}</option>) : null}
+                                </Form.Control>
+                                <Form.Control as='select' size='sm' custom defaultValue={ano} onChange={e => {
+                                    setAno(e.target.value)
+                                    setListaProcedimentos(undefined)
+                                    setListaMeses(undefined)
+                                }}>
+                                    {listaAnos ? listaAnos.map(anos => <option value={anos.ANO}>{anos.ANO}</option>) : null}
+                                </Form.Control>
+                            </Form>
                             </div>                            
                         </div>
                     </div>
