@@ -54,6 +54,9 @@ function Login() {
                         Acessar
                     </Button>                
                 </Form>
+                <p/>
+                <p>Problemas com login? Envie um email para <b>camilo.sidou@pmm.am.gov.br</b></p>
+                
             </Jumbotron>
 
             <Modal show={ModalAviso} onHide={closeModal}>
