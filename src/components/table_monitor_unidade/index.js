@@ -28,7 +28,7 @@ const TableMonitor = (props) => {
     const [listaAnos, setListaAnos] = useState(undefined)
     const [listaMeses, setListaMeses] = useState(undefined)
 
-    const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+    const mesesIdx = ['Selecione...', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
     const abrirDialog = (msg) => {
         setDialogMsg(msg)
@@ -76,14 +76,14 @@ const TableMonitor = (props) => {
             if (props.cnes) {
                 await api.get(`/cnes/${props.cnes}`)
                     .then(resp => {
-                        setNomeUnidade(resp.data.nome)
+                        setNomeUnidade(resp.data.NOME_UNIDADE)
                     })
                     .catch(e => console.log(e))
             }
             else if (props.location && props.location.state) {
                 await api.get(`/cnes/${props.location.state.cnes}`)
                     .then(resp => {
-                        setNomeUnidade(resp.data.nome)
+                        setNomeUnidade(resp.data.NOME_UNIDADE)
                     })
                     .catch(e => console.log(e))
             }
@@ -91,7 +91,7 @@ const TableMonitor = (props) => {
                 if (userData.user) {
                     await api.get(`/cnes/${userData.user.cnes}`)
                     .then(resp => {
-                        setNomeUnidade(resp.data.nome)
+                        setNomeUnidade(resp.data.NOME_UNIDADE)
                     })
                     .catch(e => console.log(e))
                 }
@@ -115,13 +115,15 @@ const TableMonitor = (props) => {
                 .catch(e => console.log(e))
             }
         }
-        if (mes == '' || ano == '') fetchData()
+        if (mes === undefined || ano === undefined) {
+            fetchData()
+        }
         fetchDados()
         fetchAnos()
         fetchMeses()
         fetchListaProcedimentos()
         fetchNomeUnidade()
-    }, [userData, ano, mes, cnes, listaProcedimentos])   
+    }, [userData, (ano, mes), cnes, listaProcedimentos])   
 
     const MontarTabelaLinha = (proc) => {
         return (
@@ -142,7 +144,7 @@ const TableMonitor = (props) => {
             doc.autoTable({
                 head: [['Código', 'Nome do procedimento', 'Quantidade']],
                 body: listaProcedimentos.map(proc => {
-                    return [proc.cod, proc.nome, proc.quantidade]
+                    return [proc.COD_PROCED, proc.NOME_PROCED, proc.QUANTIDADE]
                 }),
                 margin: { top: 100 },
                 font: 'helvetica',
@@ -166,10 +168,11 @@ const TableMonitor = (props) => {
                             <h3>Mês de Monitoramento:</h3>
                             <Form className='mes-select'>
                                 <Form.Control as='select' size='sm' defaultValue={mes} onChange={e => setMes(e.target.value)}>
-                                    {listaMeses ? listaMeses.map(retorno => <option value={retorno.mes}>{mesesIdx[retorno.mes]}</option>) : null}
+                                    <option value=''>Selecione...</option>
+                                    {listaMeses ? listaMeses.map(retorno => <option value={retorno.MES}>{mesesIdx[retorno.MES]}</option>) : null}
                                 </Form.Control>
                                 <Form.Control as='select' size='sm' custom onChange={e => setAno(e.target.value)}>
-                                    {listaAnos ? listaAnos.map(retorno => <option value={retorno.ano}>{retorno.ano}</option>) : null}
+                                    {listaAnos ? listaAnos.map(retorno => <option value={retorno.ANO}>{retorno.ANO}</option>) : null}
                                 </Form.Control>
                             </Form>
                         </div>
@@ -179,9 +182,9 @@ const TableMonitor = (props) => {
                         <div />
                         <div />
                     </div>
-                    <Table striped bordered hover>
+                    <Table key={mes} striped bordered hover>
                         <thead>
-                            <tr>
+                            <tr key={mes}>
                                 <th className='tabela-cod'>Código</th>
                                 <th className='tabela-nome'>Procedimento</th>
                                 <th className='tabela-qt'>Meta</th>                                

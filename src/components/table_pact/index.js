@@ -11,6 +11,7 @@ const TablePact = (props) => {
     const { userData } = useContext(userContext)
     const [nomeUnidade, setNomeUnidade] = useState('')
     const [cnes, setCnes] = useState('')
+    const [ine, setIne] = useState('')
     const [maxDias, setMaxDias] = useState(30)
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
@@ -32,38 +33,32 @@ const TablePact = (props) => {
 
     useEffect(() => {
         const fetchListaFuncionarios = async () => {
-            if (props.cnes) {
-                await api.get(`/pact/unidade/${ano}/${mes}/${props.cnes}`)
-                .then(resp => {
-                    if (resp) setListaFuncionarios(resp.data)
-                    setCnes(props.cnes)
-                })
-                .catch(e => console.log(e))
-            }
-            else if (props.location && props.location.state) {
-                await api.get(`/pact/unidade/${props.location.state.ano}/${props.location.state.mes}/${props.location.state.cnes}`)
-                .then(resp => {
-                    if (resp) setListaFuncionarios(resp.data)
-                    setCnes(props.location.state.cnes)
-                })
-                .catch(e => console.log(e))
-            }
-            else {
-                if (userData.user) {                
-                    await api.get(`/pact/unidade/${ano}/${mes}/${userData.user.cnes}`)
-                    .then(resp => {
-                        if (resp) setListaFuncionarios(resp.data)
-                        setCnes(userData.user.cnes)
+            if (cnes) {
+                if (ine == '') {
+                    await api.get(`/prof/ine/profs/${cnes}/NULL/${ano}/${mes}`)
+                    .then(resposta => {
+                        setListaFuncionarios(resposta.data)
                     })
-                    .catch(e => console.log(e))                
+                    .catch(e => console.log(e))
                 }
-            }
+                else {
+                    await api.get(`/prof/ine/profs/${cnes}/${ine}/${ano}/${mes}`)
+                    .then(resposta => {
+                        setListaFuncionarios(resposta.data)
+                    })
+                    .catch(e => console.log(e))
+                }
+            }        
         }
 
         const fetchData = async () => {
             if (props.location && props.location.state) {
                 setAno(props.location.state.ano)
                 setMes(props.location.state.mes)
+            }
+            else if (props.ano && props.mes) {
+                setAno(props.ano)
+                setMes(props.mes)
             }
             else {
                 await api.get('/pact/data')
@@ -99,12 +94,22 @@ const TablePact = (props) => {
         }
 
         const fetchCnes = async () => {
-            if (props.cnes) setCnes(props.cnes)
-            else if (props.location && props.location.state) setCnes(props.location.state.cnes)
+            if (props.cnes) {
+                setCnes(props.cnes)
+            } 
+            else if (props.location && props.location.state) {
+                setCnes(props.location.state.cnes)
+            }
             else {
                 if (userData.user) {                
                     setCnes(userData.user.cnes)             
                 }
+            }
+        }
+
+        const fetchIne = async () => {
+            if (props.ine) {
+                setIne(props.ine)
             }
         }
 
@@ -129,10 +134,11 @@ const TablePact = (props) => {
 
         fetchData()
         fetchCnes()
+        fetchIne()
         fetchListaFuncionarios()        
         fetchMaxDias()
         fetchNomeUnidade()
-    }, [userData, ano, mes])
+    }, [userData, ano, mes, ine])
     
     const MontarTabelaLinha = (func) => {
         return (

@@ -13,7 +13,7 @@ const TablePactDisa = (props) => {
     const [mes, setMes] = useState('')
     const [mesAnt, setMesAnt] = useState('')
     const [dia, setDia] = useState('')
-    const [revisao, setRevisao] = useState(false)
+    const [revisao, setRevisao] = useState(undefined)
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
@@ -33,7 +33,7 @@ const TablePactDisa = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (!revisao && (!ano && !mes && !dia)) {
+            if (ano == '' || mes == '') {
                 await api.get('/pact/data')
                 .then(async resp => {
                     if (resp.data.mes + 1 > 12) {
@@ -47,31 +47,35 @@ const TablePactDisa = (props) => {
                         setMesAnt(resp.data.mes)  
                     }      
                     setDia(resp.data.dia)
-                    console.log(ano, mes, dia)           
                 })
                 .catch(e => console.log(e))
             }
         }
 
         const fetchRevisao = async () => {
-            if (!revisao && ano && mes) {
-                let anoAtual = ano
-                if (mes == 1) {
-                    anoAtual = ano - 1
-                }
-                await api.get(`/pact/data_revisao/${anoAtual}/${mes - 1}`)
+            if (ano && mes && (revisao === undefined)) {        
+                await api.get(`/pact/data_revisao/${ano}/${mes}`)
                 .then(resp => {
-                if (resp.data.DIA == dia) {
-                    setRevisao(true)
-                    setMes(mes - 1)
-                }
+                    if (resp.data.DIA == dia) {
+                        setRevisao(true)
+                        if (mes == 1) {
+                            setMes(12)
+                            setAno(ano - 1)
+                        }
+                        else {
+                            setMes(mes - 1)
+                        }
+                    }
+                    else {
+                        setRevisao(false)
+                    }
                 })
                 .catch(e => console.log(e))     
-            }           
+            }         
         }
 
         const fetchListaUnidades = async () => {
-            if (props.location.state) {
+            if (props.location.state && (listaUnidadesNPact === undefined)) {
                 await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${props.location.state.cnes}`)
                 .then(resp => {
                     if (resp) {
@@ -88,7 +92,7 @@ const TablePactDisa = (props) => {
                 .catch(e => console.log(e.message))
             }
             else {
-                if (userData.user) {
+                if (userData.user && listaUnidadesNPact === undefined) {
                     await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${userData.user.cnes}`)
                     .then(resp => {
                         let pactuaram = []
@@ -107,11 +111,11 @@ const TablePactDisa = (props) => {
         fetchData()
         fetchRevisao()
         fetchListaUnidades()
-    }, [userData, ano, mes, revisao, listaUnidadesPact])    
+    }, [userData, (ano, mes), (dia, revisao)])    
 
     const MontarTabelaLinha = (unidade) => {
         return (
-           <TabelaLinha unidade={unidade} ano={ano} mes={mes} revisao={revisao}/>
+           <TabelaLinha key={unidade.cnes} unidade={unidade} ano={ano} mes={mes} revisao={revisao}/>
         )
     }
 

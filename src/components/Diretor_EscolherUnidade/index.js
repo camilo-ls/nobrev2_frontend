@@ -7,12 +7,14 @@ import TablePact from '../../components/table_pact'
 const EscolherUnidade = (props) => {
     const { userData } = useContext(userContext)
     const [cnes, setCnes] = useState('')
+    const [ine, setIne] = useState('')
+    const [nomeUnidade, setNomeUnidade] = useState('')
     const [ano, setAno] = useState('')
     const [mes, setMes] = useState('')
     //const [showDialog, setShowDialog] = useState(false)
     //const [dialogMsg, setDialogMsg] = useState('')
     
-    const [listaCnes, setListaCnes] = useState(undefined)
+    const [listaInes, setListaInes] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -30,57 +32,76 @@ const EscolherUnidade = (props) => {
             if (props.location && props.location.state) {
                 setAno(props.location.state.ano)
                 setMes(props.location.state.mes)
-            }
+            }        
             else {
                 await api.get('/pact/data')
                 .then(resp => {
-                    setAno(resp.data.ano)
-                    setMes(resp.data.mes + 1)
+                    if (resp.data.mes + 1 > 12) {
+                        setMes(1)
+                        setAno(resp.data.ano + 1)
+                    }
+                    else {
+                        setMes(resp.data.mes)
+                        setAno(resp.data.ano)
+                    }
                 })
             .catch(e => console.log(e))
             }            
         }
 
-        const fetchFilhas = async () => {
+        const fetchCnes = async () => {
             if (props.location && props.location.state) {
-                await api.get(`/pact/responsabilidade/${props.location.state.cnes}`)
-                .then(lista => {
-                    if (lista) {
-                        setListaCnes(lista.data)
-                    }
-                })
-                .catch(e => console.log(e))
+                setCnes(props.location.state.cnes)
             }
             else {
                 if (userData.user) {
-                    await api.get(`/pact/responsabilidade/${userData.user.cnes}`)
-                    .then(lista => {
-                    if (lista) {
-                        setListaCnes(lista.data)
-                    }
-                })
-                .catch(e => console.log(e))
+                    setCnes(userData.user.cnes)
                 }
             }
         }
 
+        const fetchNomeUnidade = async () => {
+            if (cnes) {
+                await api.get(`/cnes/${cnes}`)
+                .then(resposta => {
+                    setNomeUnidade(resposta.data.NOME_UNIDADE)
+                })
+                .catch(e => console.log(e))
+            }
+        }
+
+        const fetchListaInes = async () => {
+            if (cnes && !listaInes) {
+                await api.get(`/prof/ine/cnes/${cnes}`)
+                .then(resposta => {
+                    setListaInes(resposta.data)
+                })
+                .catch(e => console.log(e))
+            }
+        }
+
         fetchData()
-        fetchFilhas()        
-    }, [userData, cnes])
+        fetchCnes()
+        fetchNomeUnidade()
+        fetchListaInes()
+        console.log('escolherUnidade', ano, mes)
+    }, [userData, cnes, ine, listaInes])
         
     return (
         <div className='total-area'>
             {userData.user && userData.user.nivel >= 1?
                 <>
-                    {listaCnes ? 
-                    <>
+                    {listaInes ? 
+                    <>  
+                        <h3>Escolha a Equipe:</h3>
                         <div className='escolher-unidade'>
-                            <Form.Control as='select' onChange={e => setCnes(e.target.value)}>
-                                {listaCnes.map(unidade => <option value={unidade.cnes}>{unidade.NOME_UNIDADE}</option>)}
+                            <Form.Control as='select' onChange={e => setIne(e.target.value)}>
+                                <option value=''>{nomeUnidade}</option>
+                                {listaInes.map(unidade => <option value={unidade.INE}>{unidade.NOME_EQUIPE}</option>)}
                             </Form.Control>
                         </div>
                         <hr />
-                        <TablePact key={cnes} cnes={cnes} />
+                        <TablePact key={ine} cnes={cnes} ine={ine} listaInes={listaInes} ano={ano} mes={mes} />
                     </>
                     :
                     <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                    

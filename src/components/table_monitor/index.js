@@ -18,7 +18,7 @@ const TableMonitor = (props) => {
     const [cnes, setCnes] = useState(undefined)
     const [cns, setCns] = useState(undefined)
     const [nome, setNome] = useState(undefined)
-    const [mat, setMat] = useState(undefined)
+    const [vinc, setVinc] = useState(undefined)
     const [ano, setAno] = useState(undefined)
     const [mes, setMes] = useState(undefined)
     const [showDialog, setShowDialog] = useState(false)
@@ -44,13 +44,13 @@ const TableMonitor = (props) => {
             if (props.cnes && props.cns && props.mat) {
                 if (props.cnes != cnes) setCnes(props.cnes)
                 if (props.cns != cns) setCns(props.cns)
-                if (props.mat != mat) setMat(props.mat)
+                //if (props.mat != mat) setMat(props.mat)
                 
             }
             else if (props.location && props.location.state) {
                 if (props.location.state.cnes != cnes) setCnes(props.location.state.cnes)
                 if (props.location.state.cns != cns) setCns(props.location.state.cns)
-                if (props.location.state.mat != mat) setMat(props.location.state.mat)
+                //if (props.location.state.mat != mat) setMat(props.location.state.mat)
                 if (props.location.state.ano != ano) setAno(props.location.state.ano)
                 if (props.location.state.mes != mes) setMes(props.location.state.mes)  
             }
@@ -58,18 +58,18 @@ const TableMonitor = (props) => {
                 if (userData.user) {
                     setCnes(userData.user.cnes)
                     setCns(userData.user.cns)
-                    setMat(userData.user.mat)
+                    //setMat(userData.user.mat)
                 }
             }
         }
 
         const fetchListaProcedimentos = async () => {
-            await api.get(`prof/pmp/${ano}/${mes}/${cnes}/${cns}/${mat}`)
-                .then(resp => {
-                    if (resp) setListaProcedimentos(resp.data)
-                    fetchNome()
-                })
-                .catch(e => console.log(e))
+            //await api.get(`prof/pmp/${ano}/${mes}/${cnes}/${cns}/${mat}`)
+            //    .then(resp => {
+            //        if (resp) setListaProcedimentos(resp.data)
+            //        fetchNome()
+            //    })
+            //    .catch(e => console.log(e))
         }
 
         const fetchData = async () => {
@@ -93,18 +93,18 @@ const TableMonitor = (props) => {
             }            
         }
         const fetchAnos = async () => {
-            if (cns && mat) {
-                await api.get(`/pact/profissional/anos/${cns}/${mat}`)
-                .then(resp => setListaAnos(resp.data))
-                .catch(e => console.log(e))
-            }
+            // if (cns && mat) {
+            //     await api.get(`/pact/profissional/anos/${cns}/${mat}`)
+            //     .then(resp => setListaAnos(resp.data))
+            //     .catch(e => console.log(e))
+            // }
         }
         const fetchMeses = async () => {
-            if (cns && mat && ano) {
-                await api.get(`/pact/profissional/meses/${ano}/${cns}/${mat}`)
-                .then(resp => setListaMeses(resp.data))
-                .catch(e => console.log(e))
-            }
+            // if (cns && mat && ano) {
+            //     await api.get(`/pact/profissional/meses/${ano}/${cns}/${mat}`)
+            //     .then(resp => setListaMeses(resp.data))
+            //     .catch(e => console.log(e))
+            // }
         }
         fetchData()        
         fetchDados()
@@ -112,7 +112,7 @@ const TableMonitor = (props) => {
         fetchMeses()
         fetchNome()
         fetchListaProcedimentos()
-    }, [userData, ano, mes, cnes, cns, mat])
+    }, [userData, ano, mes, cnes, cns])
 
     const MontarTabelaLinha = (proc) => {
         return (
@@ -139,7 +139,7 @@ const TableMonitor = (props) => {
                 font: 'helvetica',
                 fontStyle: 'normal'
             })
-            doc.save('Meta Individual - ' + mat + ' - ' + nome + '.pdf')
+            doc.save('Meta Individual - ' + nome + '.pdf')
         }
     }
 

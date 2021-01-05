@@ -7,6 +7,7 @@ const TabelaMLinha = (props) => {
     const [dialogMsg, setDialogMsg] = useState('')
 
     useEffect(() => {
+        console.log('tablePact', props.ano, props.mes)
     }, [])
 
     const abrirDialog = (msg) => {

@@ -19,8 +19,6 @@ import Tabela_Mon_Disa from '../../components/tableMonitorDisa'
 import TabelaMonSemsa from '../../components/tableMonitorSEMSA'
 import Diretor_EscolherUnidade from '../../components/Diretor_EscolherUnidade'
 import Profissional_EscolherMatricula from '../../components/Profissional_EscolherMatricula'
-import Profissional_Stats from '../../components/Stat_Insert'
-import Semsa_StatView from '../../components/Stat_Visualizar'
 
 const Home = () => {
     const [userData, setUserData] = useState({
@@ -70,14 +68,12 @@ const Home = () => {
                     <Route path='/login' component={Login} />
                     <Route path='/register' component={Register} />
                     <Route exact path='/semsa' component={TabelaMonSemsa} />
-                    <Route path='/semsa/stats' component={Semsa_StatView} />
                     <Route exact path='/disa' component={Tabela_Disa} />
                     <Route path='/disa/monitoramento' component={Tabela_Mon_Disa} />
-                    <Route path='/disa/revisao' component={Tabela_Pact} />
+                    <Route path='/disa/revisao' component={Diretor_EscolherUnidade} />
                     <Route exact path='/diretor' component={Diretor_EscolherUnidade} />
                     <Route path='/diretor/monitoramento' component={Tabela_Mon_Unidade} />
                     <Route exact path='/profissional' component={Profissional_EscolherMatricula} />
-                    <Route path='/profissional/stats' component={Profissional_Stats} />
                 </Switch>
             </userContext.Provider>
         </React.Fragment>       

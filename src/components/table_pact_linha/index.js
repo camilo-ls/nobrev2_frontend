@@ -36,6 +36,7 @@ const TabelaLinha = (props) => {
                 setDiasUteisMes(resp.data.DIAS_UTEIS)
             })
             .catch(e => console.log(e))
+            console.log(props.ano, props.mes, diasUteisMes)
         }
 
               
@@ -111,12 +112,12 @@ const TabelaLinha = (props) => {
        })
        .catch(e => console.log(e))
     }
-
+    //   <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.CNS, vinc_id: props.func.VINC_ID, cnes: props.cnes, nome: props.func.NOME_PROF, ano: props.ano, mes: props.mes}}}>{props.func.NOME_PROF}</Link></td>
     return (
         <>
             <tr key={props.func.VINC_ID} className={fechado ? 'func-pactuado' : 'func-aberto'}>
-                <td className='tabela-nome'><Link className='nome-prof' to={{pathname: '/profissional', state: {cns: props.func.CNS, vinc_id: props.func.VINC_ID, cnes: props.cnes, nome: props.func.NOME_PROF, ano: props.ano, mes: props.mes}}}>{props.func.NOME_PROF}</Link></td>
-                <td className='tabela-cargo'>{props.func.CARGO}</td>                
+                <td className='tabela-nome'>{props.func.NOME_PROF}</td>
+                <td className='tabela-cargo'>{props.func.NOME_CBO}</td>                
                 <td className='tabela-dias'>
                     <Form.Control as='select' className='day-picker' value={diasPactuados} onChange={e => setDiasPactuados(e.target.value)}>
                         {maxDias >= 31 ? <option value='31'>31</option> : null}

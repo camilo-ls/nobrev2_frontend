@@ -22,9 +22,9 @@ const TabelaMLinha = (props) => {
     return (
         <>
             <tr key={props.proc.cod}>
-                <td id='proc-cod'>{props.proc.cod}</td>
-                <td id='proc-nome'>{props.proc.nome}</td>
-                <td id='proc-qt'>{props.proc.quantidade}</td>
+                <td id='proc-cod'>{props.proc.COD_PROCED}</td>
+                <td id='proc-nome'>{props.proc.NOME_PROCED}</td>
+                <td id='proc-qt'>{props.proc.QUANTIDADE}</td>
             </tr>
             <Modal show={showDialog} onHide={fecharDialog}>
                 <Modal.Header closeButton>

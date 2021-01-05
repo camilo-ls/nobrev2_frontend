@@ -17,10 +17,10 @@ const TableMonitor = (props) => {
     const [ano, setAno] = useState(undefined)
     const [mes, setMes] = useState(undefined)
     const [disa, setDisa] = useState(undefined)
-    const [cnes, setCnes] = useState('')
+    const [cnes, setCnes] = useState('DISA')
     const [nome, setNome] = useState(undefined)
-    const [maxAno, setMaxAno] = useState('')
-    const [maxMes, setMaxMes] = useState('')
+    const [maxAno, setMaxAno] = useState(undefined)
+    const [maxMes, setMaxMes] = useState(undefined)
     
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
@@ -57,7 +57,7 @@ const TableMonitor = (props) => {
             if (disa) {
                 if (!cnes) setNome(disa)
                 else await api.get(`/cnes/${cnes}`)
-                .then(unidade => setNome(unidade.data.nome))
+                .then(unidade => setNome(unidade.data.NOME_UNIDADE))
                 .catch(e => console.log(e))
             }
         }
@@ -75,7 +75,7 @@ const TableMonitor = (props) => {
         const fetchListaProcedimentos = async () => {
             //console.log(ano, mes)
             if (ano && mes && listaProcedimentos === undefined) {
-                if (cnes == '') {
+                if (cnes == 'DISA') {
                     await api.get(`/pact/disa_pact/${ano}/${mes}/${disa}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
                 } 
                 else {                    
@@ -163,7 +163,7 @@ const TableMonitor = (props) => {
                                 setCnes(e.target.value)
                                 setListaProcedimentos(undefined);
                             }}>
-                                <option value=''>{disa}</option>
+                                <option value='DISA'>{disa}</option>
                                 {listaUnidades ? listaUnidades.map(unidade => <option value={unidade.cnes}>{unidade.nome}</option>) : null}
                             </Form.Control>
                         </div>                        
