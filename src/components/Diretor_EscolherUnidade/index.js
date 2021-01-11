@@ -14,6 +14,7 @@ const EscolherUnidade = (props) => {
     //const [showDialog, setShowDialog] = useState(false)
     //const [dialogMsg, setDialogMsg] = useState('')
     
+    const [listaUnidades, setListaUnidades] = useState(undefined)
     const [listaInes, setListaInes] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
@@ -54,7 +55,7 @@ const EscolherUnidade = (props) => {
                 setCnes(props.location.state.cnes)
             }
             else {
-                if (userData.user) {
+                if (userData.user && cnes == '') {
                     setCnes(userData.user.cnes)
                 }
             }
@@ -70,10 +71,22 @@ const EscolherUnidade = (props) => {
             }
         }
 
+        const fetchListaCnes = async() => {
+            if (userData.user && !listaUnidades) {
+                await api.get(`/pact/resp/${userData.user.id}`)
+                .then(resposta => {
+                    console.log('front', resposta)
+                    setListaUnidades(resposta.data)
+                    setCnes(resposta.data[0].CNES)
+                })
+                .catch(e => console.log(e))
+            }
+        }
+
         const fetchListaInes = async () => {
             if (cnes && !listaInes) {
                 await api.get(`/prof/ine/cnes/${cnes}`)
-                .then(resposta => {
+                .then(resposta => {                    
                     setListaInes(resposta.data)
                 })
                 .catch(e => console.log(e))
@@ -83,25 +96,41 @@ const EscolherUnidade = (props) => {
         fetchData()
         fetchCnes()
         fetchNomeUnidade()
+        fetchListaCnes()
         fetchListaInes()
-        console.log('escolherUnidade', ano, mes)
-    }, [userData, cnes, ine, listaInes])
+    }, [userData, cnes, ine, listaUnidades, listaInes])
         
     return (
         <div className='total-area'>
             {userData.user && userData.user.nivel >= 1?
-                <>
+                <>                    
+                    {listaUnidades && listaUnidades.length > 1 ? 
+                    <>
+                        <h3>Escolha a Unidade:</h3>
+                        <div className='escolher-unidade'>
+                            <Form.Control as='select' onChange={e => {
+                                setListaInes(undefined)
+                                setCnes(e.target.value)
+                            }}>
+                                
+                                {listaUnidades.map(unidade => <option value={unidade.CNES}>{unidade.NOME_UNIDADE}</option>)}
+                            </Form.Control>
+                        </div>
+                    </>               
+                    : null}
+                    
+
                     {listaInes ? 
                     <>  
                         <h3>Escolha a Equipe:</h3>
-                        <div className='escolher-unidade'>
+                        <div className='escolher-equipe'>
                             <Form.Control as='select' onChange={e => setIne(e.target.value)}>
                                 <option value=''>{nomeUnidade}</option>
-                                {listaInes.map(unidade => <option value={unidade.INE}>{unidade.NOME_EQUIPE}</option>)}
+                                {listaInes.map(equipe => <option value={equipe.INE}>{equipe.NOME_EQUIPE}</option>)}
                             </Form.Control>
                         </div>
                         <hr />
-                        <TablePact key={ine} cnes={cnes} ine={ine} listaInes={listaInes} ano={ano} mes={mes} />
+                        <TablePact key={[ine, cnes]} cnes={cnes} ine={ine} listaInes={listaInes} ano={ano} mes={mes} />
                     </>
                     :
                     <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                    
