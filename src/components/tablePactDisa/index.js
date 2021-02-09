@@ -9,10 +9,10 @@ import './styles.css'
 
 const TablePactDisa = (props) => {
     const { userData } = useContext(userContext)
-    const [ano, setAno] = useState('')
-    const [mes, setMes] = useState('')
-    const [mesAnt, setMesAnt] = useState('')
-    const [dia, setDia] = useState('')
+    const [ano, setAno] = useState(undefined)
+    const [mes, setMes] = useState(undefined)
+    const [mesAnt, setMesAnt] = useState(undefined)
+    const [dia, setDia] = useState(undefined)
     const [revisao, setRevisao] = useState(undefined)
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
@@ -33,7 +33,7 @@ const TablePactDisa = (props) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (ano == '' || mes == '') {
+            if (ano === undefined || mes === undefined) {
                 await api.get('/pact/data')
                 .then(async resp => {
                     if (resp.data.mes + 1 > 12) {
@@ -111,7 +111,7 @@ const TablePactDisa = (props) => {
         fetchData()
         fetchRevisao()
         fetchListaUnidades()
-    }, [userData, (ano, mes), (dia, revisao)])    
+    }, [userData, ano, mes, dia, revisao])    
 
     const MontarTabelaLinha = (unidade) => {
         return (
