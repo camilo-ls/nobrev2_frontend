@@ -193,7 +193,7 @@ const TableMonitor = (props) => {
                     </div>
                     <div className='sub-menu'>
                     <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
-                    <CSVLink data={listaProcedimentos}>Gerar CSV</CSVLink>
+                    {listaProcedimentos? <CSVLink data={listaProcedimentos}>Gerar CSV</CSVLink> : null}
                     </div>
                     <Table striped bordered hover>
                         <thead>
