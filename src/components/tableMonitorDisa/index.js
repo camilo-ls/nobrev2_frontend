@@ -12,7 +12,7 @@ import 'jspdf-autotable'
 import logoNobre64 from '../../img/nobrebase64'
 import logoCid64 from '../../img/cidbase64'
 
-import { CSVLink } from 'react-csv'
+import { CSVDownload } from 'react-csv'
 
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
@@ -131,6 +131,14 @@ const TableMonitor = (props) => {
         )
     }
 
+    const downloadCSV = async () => {
+        if (ano && mes && disa) {
+            const compData = await api.get(`/pact/comp/disa/${ano}/${mes}/${disa}`)
+
+            return <CSVDownload data={compData} target='_blank'/>       
+        }
+    }
+
     const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
         doc.addImage(logoNobre64, 'PNG', 50, 20, 200, 75)
@@ -193,7 +201,7 @@ const TableMonitor = (props) => {
                     </div>
                     <div className='sub-menu'>
                     <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
-                    {listaProcedimentos? <CSVLink data={listaProcedimentos}>Gerar CSV</CSVLink> : null}
+                    <Button variant='outline-warning' onClick={downloadCSV}>Gerar CSV</Button>                    
                     </div>
                     <Table striped bordered hover>
                         <thead>
