@@ -17,8 +17,8 @@ const TablePactDisa = (props) => {
     const [showDialog, setShowDialog] = useState(false)
     const [dialogMsg, setDialogMsg] = useState('')
     
-    const [listaUnidadesPact, setListaUnidadesPact] = useState(undefined)
-    const [listaUnidadesNPact, setListaUnidadesNPact] = useState(undefined)
+    const [listaUnidadesPact, setListaUnidadesPact] = useState()
+    const [listaUnidadesNPact, setListaUnidadesNPact] = useState()
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -75,8 +75,8 @@ const TablePactDisa = (props) => {
                         let n_pactuaram = []
                         for (let unidade of resp.data) {
                             if (unidade.fechou) pactuaram.push(unidade)
-                            else n_pactuaram.push(unidade)
-                        }
+                            else n_pactuaram.push(unidade)                            
+                        }                        
                         setListaUnidadesPact(pactuaram)
                         setListaUnidadesNPact(n_pactuaram)
                     }
@@ -91,7 +91,7 @@ const TablePactDisa = (props) => {
                         let n_pactuaram = []
                         for (let unidade of resp.data) {
                             if (unidade.fechou) pactuaram.push(unidade)
-                            else n_pactuaram.push(unidade)
+                            else n_pactuaram.push(unidade)                            
                         }
                         setListaUnidadesPact(pactuaram)
                         setListaUnidadesNPact(n_pactuaram)

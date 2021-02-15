@@ -31,6 +31,7 @@ const TableMonitor = (props) => {
     const [listaMeses, setListaMeses] = useState(undefined)
     const [listaProcedimentos, setListaProcedimentos] = useState(undefined)
     const [listaUnidades, setListaUnidades] = useState(undefined)
+    const [comp, setComp] = useState(undefined)
 
     const mesesIdx = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
@@ -51,6 +52,7 @@ const TableMonitor = (props) => {
             else {
                 if (userData.user) {
                     setDisa(userData.user.cnes)
+                    setNome(disa)
                 }
             }
         }
@@ -61,6 +63,12 @@ const TableMonitor = (props) => {
                 else await api.get(`/cnes/${cnes}`)
                 .then(unidade => setNome(unidade.data.NOME_UNIDADE))
                 .catch(e => console.log(e))
+            }
+            else {
+                if (userData.user) {
+                    setDisa(userData.user.cnes)
+                    setNome(disa)
+                }
             }
         }
 
@@ -83,6 +91,16 @@ const TableMonitor = (props) => {
                 else {                    
                     await api.get(`/pact/unidade_pact/${ano}/${mes}/${cnes}`).then(procs => setListaProcedimentos(procs.data)).catch(e => console.log(e))
                 }
+            }
+        }
+
+        const fetchComp = async () => {
+            if (ano && mes && disa) {
+                await api.get(`/pact/comp/disa/${ano}/${mes}/${disa}`)
+                .then(compData => {
+                    setComp(compData.data[0])
+                })
+                .catch(e => console.log(e))   
             }
         }
 
@@ -121,6 +139,7 @@ const TableMonitor = (props) => {
         fetchUnidades()
         fetchNome()
         fetchListaProcedimentos()
+        fetchComp()
 
         console.log(ano, mes, disa, cnes)
     }, [userData, ano, mes, disa, cnes, listaProcedimentos])
@@ -129,7 +148,11 @@ const TableMonitor = (props) => {
         return (            
            <TabelaLinha proc={proc} ano={ano} mes={mes} />
         )
+<<<<<<< HEAD
     }  
+=======
+    }   
+>>>>>>> a5d642405a7698cf51049a3b8aba460a36054a26
 
     const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
@@ -161,7 +184,7 @@ const TableMonitor = (props) => {
                     <div className='cabeçalho-tabela'>
                         <div>
                             <h4>Tabela de Metas</h4>
-                            <Form.Control as='select' defaultValue='' onChange={e => {
+                            <Form.Control as='select' defaultValue='DISA' onChange={e => {
                                 setCnes(e.target.value)
                                 setListaProcedimentos(undefined);
                             }}>
@@ -174,17 +197,19 @@ const TableMonitor = (props) => {
                             <div>
                             <span>Data de Monitoramento:</span>
                             <Form className='mes-select'>                                    
-                                <Form.Control as='select' size='sm' custom defaultValue={mes} onChange={e => {
+                               <Form.Control key={mes} as='select' size='sm' defaultValue={mes} onChange={e => {
                                     setMes(e.target.value) 
                                     setListaProcedimentos(undefined)
                                 }}>
+                                    <option value=''>Selecione...</option>
                                     {listaMeses ? listaMeses.map(meses => <option value={meses.MES}>{mesesIdx[meses.MES]}</option>) : null}
                                 </Form.Control>
-                                <Form.Control as='select' size='sm' custom defaultValue={ano} onChange={e => {
+                                <Form.Control key={ano} as='select' size='sm' defaultValue={ano} onChange={e => {
                                     setAno(e.target.value)
                                     setListaProcedimentos(undefined)
                                     setListaMeses(undefined)
                                 }}>
+                                    <option value=''>Selecione...</option>
                                     {listaAnos ? listaAnos.map(anos => <option value={anos.ANO}>{anos.ANO}</option>) : null}
                                 </Form.Control>
                             </Form>
@@ -192,8 +217,13 @@ const TableMonitor = (props) => {
                         </div>
                     </div>
                     <div className='sub-menu'>
+<<<<<<< HEAD
                     <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
                     <CSVLink data={listaProcedimentos}>Gerar CSV</CSVLink>
+=======
+                   <a href='' onClick={imprimirPDF}>Gerar PDF</a>
+                    {comp ? <CSVLink data={comp} filename={'Competencia ' + disa + ' - ' + ano.toString() + '-' + mes.toString()} separator={';'} enclosingCharacter={`"`}>Gerar CSV</CSVLink> : null}                 
+>>>>>>> a5d642405a7698cf51049a3b8aba460a36054a26
                     </div>
                     <Table striped bordered hover>
                         <thead>
@@ -207,7 +237,7 @@ const TableMonitor = (props) => {
                             {listaProcedimentos ? listaProcedimentos.map(MontarTabelaLinha) : null}
                         </tbody>
                     </Table>
-                    {listaProcedimentos ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}                 
+                    {listaProcedimentos ? null : <div className='waiting-load'> <Spinner animation="border" /> <h2>Carregando. Por favor aguarde.</h2> </div>}
                 </>
             :
                 <>

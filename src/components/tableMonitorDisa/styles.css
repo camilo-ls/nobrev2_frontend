@@ -4,3 +4,11 @@
     display: grid;
     grid-template-columns: 10% 90%;
 }
+
+.sub-menu {
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: grid;
+    grid-template-columns: 10% 10%;
+}
