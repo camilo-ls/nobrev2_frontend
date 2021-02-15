@@ -217,13 +217,8 @@ const TableMonitor = (props) => {
                         </div>
                     </div>
                     <div className='sub-menu'>
-<<<<<<< HEAD
-                    <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
-                    <CSVLink data={listaProcedimentos}>Gerar CSV</CSVLink>
-=======
                    <a href='' onClick={imprimirPDF}>Gerar PDF</a>
                     {comp ? <CSVLink data={comp} filename={'Competencia ' + disa + ' - ' + ano.toString() + '-' + mes.toString()} separator={';'} enclosingCharacter={`"`}>Gerar CSV</CSVLink> : null}                 
->>>>>>> a5d642405a7698cf51049a3b8aba460a36054a26
                     </div>
                     <Table striped bordered hover>
                         <thead>
