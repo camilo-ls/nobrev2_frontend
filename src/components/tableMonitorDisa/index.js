@@ -148,11 +148,7 @@ const TableMonitor = (props) => {
         return (            
            <TabelaLinha proc={proc} ano={ano} mes={mes} />
         )
-<<<<<<< HEAD
-    }  
-=======
     }   
->>>>>>> a5d642405a7698cf51049a3b8aba460a36054a26
 
     const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
