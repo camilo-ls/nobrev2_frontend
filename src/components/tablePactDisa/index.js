@@ -70,15 +70,9 @@ const TablePactDisa = (props) => {
             if (props.location.state && (listaUnidadesNPact === undefined)) {
                 await api.get(`/pact/faltam_pactuar/${ano}/${mes}/${props.location.state.cnes}`)
                 .then(resp => {
-                    if (resp) {
-                        let pactuaram = []
-                        let n_pactuaram = []
-                        for (let unidade of resp.data) {
-                            if (unidade.fechou) pactuaram.push(unidade)
-                            else n_pactuaram.push(unidade)                            
-                        }                        
-                        setListaUnidadesPact(pactuaram)
-                        setListaUnidadesNPact(n_pactuaram)
+                    if (resp) {                        
+                        setListaUnidadesPact(resp.data[0])
+                        setListaUnidadesNPact(resp.data[1])
                     }
                 })
                 .catch(e => console.log(e.message))
