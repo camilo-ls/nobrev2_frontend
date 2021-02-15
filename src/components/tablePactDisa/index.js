@@ -36,16 +36,8 @@ const TablePactDisa = (props) => {
             if (ano === undefined || mes === undefined) {
                 await api.get('/pact/data')
                 .then(async resp => {
-                    if (resp.data.mes + 1 > 12) {
-                        setMesAnt(12)
-                        setMes(1)
-                        setAno(resp.data.ano + 1)
-                    }
-                    else {
-                        setAno(resp.data.ano)
-                        setMes(resp.data.mes + 1)
-                        setMesAnt(resp.data.mes)  
-                    }      
+                    setMes(resp.data.mes)
+                    setAno(resp.data.ano)                
                     setDia(resp.data.dia)
                 })
                 .catch(e => console.log(e))
@@ -111,11 +103,11 @@ const TablePactDisa = (props) => {
         fetchData()
         fetchRevisao()
         fetchListaUnidades()
-    }, [userData, listaUnidadesPact, listaUnidadesNPact, ano, mes, dia, revisao])    
+    }, [userData, listaUnidadesPact, revisao])    
 
     const MontarTabelaLinha = (unidade) => {
         return (
-           <TabelaLinha key={unidade.cnes} unidade={unidade} ano={ano} mes={mes} revisao={revisao}/>
+           <TabelaLinha key={[unidade.cnes, revisao]} unidade={unidade} ano={ano} mes={mes} revisao={revisao}/>
         )
     }
 

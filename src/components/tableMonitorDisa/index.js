@@ -12,6 +12,8 @@ import 'jspdf-autotable'
 import logoNobre64 from '../../img/nobrebase64'
 import logoCid64 from '../../img/cidbase64'
 
+import { CSVLink } from 'react-csv'
+
 const TableMonitor = (props) => {
     const { userData } = useContext(userContext)
     const [ano, setAno] = useState(undefined)
@@ -127,7 +129,7 @@ const TableMonitor = (props) => {
         return (            
            <TabelaLinha proc={proc} ano={ano} mes={mes} />
         )
-    }
+    }  
 
     const imprimirPDF = async () => {
         var doc = new jspdf('p', 'pt', 'a4')
@@ -191,6 +193,7 @@ const TableMonitor = (props) => {
                     </div>
                     <div className='sub-menu'>
                     <Button variant='outline-success' onClick={imprimirPDF}>Gerar PDF</Button>
+                    <CSVLink data={listaProcedimentos}>Gerar CSV</CSVLink>
                     </div>
                     <Table striped bordered hover>
                         <thead>
