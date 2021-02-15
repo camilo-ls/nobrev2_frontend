@@ -91,7 +91,7 @@ const TablePactDisa = (props) => {
         fetchData()
         fetchRevisao()
         fetchListaUnidades()
-    }, [userData, listaUnidadesNPact, revisao])    
+    }, [userData, listaUnidadesPact, listaUnidadesNPact, revisao])    
 
     const MontarTabelaLinha = (unidade) => {
         return (
