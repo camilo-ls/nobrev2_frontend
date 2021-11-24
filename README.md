@@ -1,4 +1,4 @@
-# NOBRE - Backend
+# NOBRE - Frontend
 
 ## Stack utilizada
 - React
